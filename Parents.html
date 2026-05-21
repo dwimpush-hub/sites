@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colorado Trip Preview 2026 🏔️</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&family=Lora:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --navy:#0f1b2d;--navy-mid:#162235;--navy-card:#1d2e45;
+    --amber:#e8a838;--amber-light:#f5c96a;--orange:#d9602a;
+    --cream:#f5ede0;--cream-muted:#b8a990;
+    --green:#3d7a52;--green-light:#5fa870;
+    --river:#2a7ab8;--river-light:#4da3e0;
+    --white:#ffffff;--border:rgba(232,168,56,0.2);
+  }
+  html{scroll-behavior:smooth}
+  body{background:var(--navy);color:var(--cream);font-family:'Nunito',sans-serif;font-size:17px;line-height:1.7;overflow-x:hidden}
+
+  /* HERO */
+  .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 8rem;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,#1f3a5c 0%,var(--navy) 65%);z-index:0}
+  .stars{position:absolute;inset:0;z-index:0;overflow:hidden}
+  .star{position:absolute;background:var(--amber-light);border-radius:50%;animation:twinkle var(--dur,3s) ease-in-out infinite alternate}
+  @keyframes twinkle{from{opacity:.1;box-shadow:0 0 0 rgba(245,201,106,0)}to{opacity:1;box-shadow:0 0 6px rgba(245,201,106,.8)}}
+  .mountains{position:absolute;bottom:0;left:0;right:0;z-index:1;pointer-events:none}
+  .hero-content{position:relative;z-index:2;max-width:860px}
+  .hero-eyebrow{display:inline-block;font-weight:800;font-size:.85rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);background:rgba(232,168,56,.1);border:1px solid rgba(232,168,56,.3);padding:.4rem 1.2rem;border-radius:2rem;margin-bottom:1.5rem;animation:fadeUp .8s ease both}
+  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,11vw,8.5rem);line-height:.92;color:var(--white);letter-spacing:.02em;animation:fadeUp .8s .15s ease both;text-shadow:0 4px 40px rgba(0,0,0,.5)}
+  .hero-title span{color:var(--amber)}
+  .hero-subtitle{font-family:'Lora',serif;font-style:italic;font-size:clamp(1.05rem,2.5vw,1.4rem);color:var(--cream-muted);margin-top:1.2rem;animation:fadeUp .8s .3s ease both}
+  .hero-date-badge{display:inline-flex;align-items:center;gap:.6rem;margin-top:2rem;background:var(--orange);color:var(--white);font-weight:800;font-size:1rem;padding:.65rem 1.6rem;border-radius:2rem;animation:fadeUp .8s .45s ease both}
+  .hero-date-badge .dot{width:8px;height:8px;background:rgba(255,255,255,.6);border-radius:50%;display:inline-block}
+  .hero-badges{display:flex;align-items:center;justify-content:center;gap:.8rem;flex-wrap:wrap;margin-top:1.2rem;animation:fadeUp .8s .6s ease both}
+  .h-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .9rem;border-radius:2rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:var(--cream-muted)}
+  .h-badge.hl{background:rgba(95,168,112,.15);border-color:rgba(95,168,112,.35);color:var(--green-light)}
+  .scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:.4rem;color:var(--cream-muted);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;animation:bounce 2s ease-in-out infinite}
+  .scroll-hint::after{content:'';display:block;width:1.5px;height:28px;background:linear-gradient(to bottom,var(--amber),transparent);margin:0 auto}
+  @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTIONS */
+  section{padding:5rem 2rem;max-width:1060px;margin:0 auto}
+  .section-label{font-weight:800;font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,3.8rem);line-height:1.05;color:var(--white);letter-spacing:.02em}
+  .divider{width:60px;height:3px;background:var(--amber);border-radius:2px;margin:1.2rem 0 2rem}
+
+  /* BLURB */
+  .blurb-section{border-bottom:1px solid var(--border)}
+  .blurb-box{background:var(--navy-card);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:0 12px 12px 0;padding:2.2rem 2.5rem;font-size:1.05rem;line-height:1.8;color:var(--cream);position:relative}
+  .blurb-box .qm{font-family:'Lora',serif;font-size:5rem;line-height:1;color:var(--amber);opacity:.3;position:absolute;top:.5rem;left:1.5rem;pointer-events:none}
+  .blurb-box p{position:relative;z-index:1}
+
+  .week-split{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
+  .week-card{background:rgba(15,27,45,.6);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;position:relative;overflow:hidden}
+  .week-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .week-card.bday::before{background:var(--amber)}
+  .week-card.wed::before{background:var(--green-light)}
+  .wk-kick{font-size:.72rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;display:block}
+  .week-card.bday .wk-kick{color:var(--amber)}
+  .week-card.wed .wk-kick{color:var(--green-light)}
+  .wk-title{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:var(--white);letter-spacing:.03em;margin-bottom:.4rem}
+  .wk-desc{font-size:.9rem;color:var(--cream-muted);line-height:1.55}
+
+  /* ACTIVITY CARDS */
+  .activities-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:2.5rem}
+  .activity-card{background:var(--navy-card);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;position:relative;overflow:hidden}
+  .activity-card:hover{transform:translateY(-5px);border-color:var(--amber);box-shadow:0 12px 40px rgba(232,168,56,.12)}
+  .activity-card.interactive{cursor:pointer}
+  .activity-card.river-card{border-color:rgba(95,168,112,.22)}
+  .activity-card.river-card:hover{border-color:var(--green-light);box-shadow:0 12px 40px rgba(95,168,112,.12)}
+  .activity-card::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle,rgba(232,168,56,.07) 0%,transparent 70%);border-radius:50%;transform:translate(20px,-20px)}
+  .card-icon{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--amber);line-height:1;margin-bottom:1rem;display:block;opacity:.8}
+  .river-card .card-icon{color:var(--green-light)}
+  .card-title{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--white);letter-spacing:.03em;margin-bottom:.5rem}
+  .card-body{font-size:.95rem;color:var(--cream-muted);line-height:1.7;margin-bottom:1.2rem}
+  .card-tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:2rem;background:rgba(232,168,56,.12);color:var(--amber-light);border:1px solid rgba(232,168,56,.25);margin-bottom:1rem}
+  .card-tag.gtag{background:rgba(95,168,112,.12);color:var(--green-light);border-color:rgba(95,168,112,.3)}
+  .book-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.9rem;font-weight:700;color:var(--amber);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;transition:gap .2s}
+  .book-link:hover{gap:.7rem}
+  .book-link.glink{color:var(--green-light)}
+
+  /* SUNDAY SPOTLIGHT */
+  .spotlight-band{background:linear-gradient(135deg,rgba(63,168,112,.12) 0%,rgba(15,27,45,.95) 60%);border:1px solid rgba(95,168,112,.3);border-radius:20px;padding:2.8rem;margin-top:3rem;position:relative;overflow:hidden}
+  .spotlight-band::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(95,168,112,.18) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+  .spotlight-kicker{font-size:.75rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:var(--green-light);margin-bottom:.5rem}
+  .spotlight-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,3.4rem);color:var(--white);letter-spacing:.03em;line-height:1;margin-bottom:.8rem}
+  .spotlight-body{font-size:1rem;color:var(--cream-muted);line-height:1.7;max-width:680px;margin-bottom:1.5rem}
+  .rapids-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.8rem}
+  .rb{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .9rem;border-radius:2rem;background:rgba(42,122,184,.14);border:1px solid rgba(42,122,184,.3);color:var(--river-light);font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .spotlight-cta{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;border-radius:2rem;background:var(--green);color:var(--white);font-weight:900;font-size:.92rem;text-decoration:none;border:none;cursor:pointer;font-family:inherit;transition:background .2s,transform .2s}
+  .spotlight-cta:hover{background:var(--green-light);transform:translateY(-2px)}
+  .spotlight-imgs{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:1.8rem}
+  .spotlight-imgs img{width:100%;height:160px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.05)}
+
+  /* ITINERARY */
+  .itin-section{border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .phase-row{display:flex;align-items:center;gap:1rem;margin:1rem 0 2rem}
+  .phase-pill{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:.35rem 1rem;border-radius:2rem;white-space:nowrap;flex-shrink:0}
+  .phase-pill.bp{background:rgba(232,168,56,.14);border:1px solid rgba(232,168,56,.3);color:var(--amber)}
+  .phase-pill.wp{background:rgba(95,168,112,.14);border:1px solid rgba(95,168,112,.3);color:var(--green-light)}
+  .phase-line{flex:1;height:1px;background:linear-gradient(to right,rgba(232,168,56,.35),transparent)}
+  .phase-line.gline{background:linear-gradient(to right,rgba(95,168,112,.35),transparent)}
+
+  .day-block{display:grid;grid-template-columns:90px 1fr;gap:0 2rem;position:relative;margin-bottom:0}
+  .day-block+.day-block{margin-top:.5rem}
+  .day-block:not(:last-of-type)::after{content:'';position:absolute;left:44px;top:56px;width:2px;height:calc(100% - 20px);background:linear-gradient(to bottom,var(--amber),transparent);opacity:.25}
+  .day-block.fday:not(:last-of-type)::after{background:linear-gradient(to bottom,var(--green-light),transparent)}
+  .day-label{text-align:center;padding-top:.3rem}
+  .day-num{display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:var(--amber);color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.05em;margin:0 auto .4rem;flex-shrink:0;position:relative;z-index:2}
+  .fday .day-num{background:var(--green-light)}
+  .day-date{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--cream-muted);display:block;text-align:center}
+  .day-content{background:var(--navy-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.5rem;transition:border-color .25s}
+  .fday .day-content{border-color:rgba(95,168,112,.2)}
+  .day-head{padding:1.2rem 1.6rem;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;user-select:none;transition:background .2s}
+  .day-head:hover{background:rgba(255,255,255,.02)}
+  .day-head-l{flex:1}
+  .day-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--white);letter-spacing:.03em;margin-bottom:.25rem;line-height:1}
+  .day-prev{font-size:.88rem;color:var(--cream-muted);line-height:1.45}
+  .expand-btn{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,168,56,.08);border:1px solid rgba(232,168,56,.2);color:var(--amber);font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:transform .3s ease,background .2s;margin-top:2px}
+  .day-content.open .expand-btn{transform:rotate(180deg);background:var(--amber);color:var(--navy)}
+  .fday .expand-btn{background:rgba(95,168,112,.08);border-color:rgba(95,168,112,.2);color:var(--green-light)}
+  .fday .day-content.open .expand-btn{background:var(--green-light);color:var(--navy)}
+  .day-detail{display:none;padding:0 1.6rem 1.5rem;border-top:1px solid var(--border);padding-top:1.2rem;animation:detReveal .3s ease both}
+  @keyframes detReveal{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .day-content.open .day-detail{display:block}
+  .ev-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  .ev{display:flex;align-items:flex-start;gap:.8rem;font-size:.93rem;color:var(--cream)}
+  .ev-t{font-size:.76rem;font-weight:700;color:var(--amber);min-width:65px;margin-top:3px;letter-spacing:.04em;flex-shrink:0}
+  .fday .ev-t{color:var(--green-light)}
+  .ev-link{color:var(--cream);text-decoration:none;border-bottom:1px dashed rgba(245,201,106,.4);cursor:pointer;transition:color .2s,border-color .2s}
+  .ev-link:hover{color:var(--amber);border-color:var(--amber)}
+  .drive-note{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem .6rem 1rem;margin-top:1rem;background:rgba(15,27,45,.55);border:1px dashed rgba(232,168,56,.15);border-radius:8px;font-size:.8rem;color:var(--cream-muted)}
+  .drive-note .di{color:var(--amber);flex-shrink:0}
+  .drive-note strong{color:var(--amber-light)}
+
+  /* TRAVEL SECTION */
+  .flights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem;margin-top:2rem}
+  .flight-card{background:var(--navy-card);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1.8rem;transition:border-color .2s}
+  .flight-card:hover{border-color:var(--amber)}
+  .flight-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+  .flight-route{display:flex;align-items:center;gap:.7rem;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--white);letter-spacing:.05em}
+  .flight-route .pln{font-size:1.1rem;color:var(--amber)}
+  .fbadge{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .7rem;border-radius:2rem;background:rgba(61,122,82,.2);color:var(--green-light);border:1px solid rgba(61,122,82,.4)}
+  .fbadge.ret{background:rgba(217,96,42,.15);color:#e88a5a;border-color:rgba(217,96,42,.35)}
+  .fd{display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;color:var(--cream-muted)}
+  .fd strong{color:var(--cream);font-weight:700}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,18,31,.9);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:2rem;opacity:0;transition:opacity .3s ease}
+  .modal-overlay.active{display:flex;opacity:1}
+  .modal-content{background:var(--navy-card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;position:relative;padding:3rem;box-shadow:0 20px 50px rgba(0,0,0,.5);transform:translateY(20px) scale(.95);transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+  .modal-overlay.active .modal-content{transform:translateY(0) scale(1)}
+  .modal-close{position:absolute;top:1.5rem;right:1.5rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--white);width:40px;height:40px;border-radius:50%;font-size:1.5rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .modal-close:hover{background:var(--amber);color:var(--navy);border-color:var(--amber);transform:rotate(90deg)}
+  .modal-header{text-align:center;margin-bottom:2rem}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--white);letter-spacing:.03em;line-height:1}
+  .modal-tagline{font-family:'Lora',serif;font-style:italic;font-size:1rem;color:var(--cream-muted);margin-top:.5rem}
+  .modal-body{font-size:1.05rem;color:var(--cream);margin-bottom:1.5rem;text-align:center;line-height:1.7}
+  .modal-gallery{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem}
+  .modal-gallery img{width:100%;height:200px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.05)}
+  .modal-gallery img:first-child{grid-column:span 2;height:300px}
+  .modal-features{list-style:none;margin-bottom:2rem;display:flex;flex-direction:column;gap:.9rem}
+  .modal-features li{position:relative;padding-left:2rem;font-size:.95rem;color:var(--cream-muted)}
+  .modal-features li::before{content:'✦';position:absolute;left:0;top:0;color:var(--amber);font-size:1.1rem}
+  .modal-features.gbul li::before{color:var(--green-light)}
+  .modal-footer{text-align:center}
+  .excta{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.8rem;border-radius:2rem;background:var(--amber);color:var(--navy);font-weight:900;font-size:.92rem;text-decoration:none;letter-spacing:.02em;transition:background .2s,transform .2s,box-shadow .2s}
+  .excta:hover{background:var(--amber-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,168,56,.18)}
+  .excta.gn{background:var(--green);color:var(--white)}
+  .excta.gn:hover{background:var(--green-light)}
+
+  /* CLOSING */
+  .closing{text-align:center;padding:5rem 2rem 6rem;background:linear-gradient(180deg,var(--navy) 0%,#101e31 100%);border-top:1px solid var(--border)}
+  .closing p{max-width:620px;margin:0 auto 2rem;color:var(--cream-muted);font-size:1.05rem;line-height:1.75}
+  .closing-badges{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
+  .cbadge{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:2rem;background:rgba(232,168,56,.1);border:1px solid rgba(232,168,56,.22);color:var(--amber-light);font-size:.85rem;font-weight:700;letter-spacing:.06em}
+  footer{text-align:center;padding:2rem;font-size:.8rem;color:rgba(184,169,144,.4);border-top:1px solid var(--border)}
+
+  /* RESPONSIVE */
+  @media(max-width:768px){.week-split{grid-template-columns:1fr}.spotlight-imgs{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){
+    .day-block{grid-template-columns:64px 1fr;gap:0 1rem}
+    .day-block:not(:last-of-type)::after{left:31px}
+    .day-num{width:40px;height:40px;font-size:1.1rem}
+    .blurb-box{padding:1.5rem}
+    .activities-grid{grid-template-columns:1fr}
+    .modal-gallery{grid-template-columns:1fr}
+    .modal-gallery img:first-child{grid-column:span 1;height:220px}
+    .modal-content{padding:2rem 1.5rem}
+    .spotlight-imgs{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="stars" id="stars"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Colorado &nbsp;·&nbsp; Summer 2026 &nbsp;·&nbsp; Buena Vista & Colorado Springs</div>
+    <h1 class="hero-title">Nate's<br><span>Colorado</span><br>Birthday</h1>
+    <p class="hero-subtitle">An adventure-packed week in the Rockies — then the whole family together for Courtney's wedding and a little whitewater.</p>
+    <div class="hero-date-badge">
+      <span class="dot"></span>
+      <span>July 28 – August 3, 2026</span>
+      <span class="dot"></span>
+    </div>
+    <div class="hero-badges">
+      <span class="h-badge">🎉 Birthday Trip: Jul 28–31</span>
+      <span class="h-badge">🎂 Nathan's Birthday Dinner: Fri Jul 31</span>
+      <span class="h-badge">💒 Courtney's Wedding: Sat Aug 1</span>
+      <span class="h-badge hl">🌊 Rafting Together: Sun Aug 2</span>
+    </div>
+  </div>
+  <div class="scroll-hint">scroll</div>
+  <div class="mountains">
+    <svg viewBox="0 0 1440 220" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <polygon points="0,220 180,60 340,150 520,30 700,130 880,20 1050,110 1230,50 1440,120 1440,220" fill="#0f1b2d"/>
+      <polygon points="0,220 200,100 380,170 560,80 720,160 900,70 1100,140 1300,90 1440,140 1440,220" fill="#0d1928" opacity="0.9"/>
+    </svg>
+  </div>
+</div>
+
+<!-- THE PLAN -->
+<section class="blurb-section">
+  <div class="section-label">The Full Picture</div>
+  <h2 class="section-title">Here's the Plan</h2>
+  <div class="divider"></div>
+  <div class="blurb-box">
+    <div class="qm">"</div>
+    <p>We wanted to share what we're going to be up to in the Rockies before you all arrive for the wedding! We headed out to Buena Vista on Tuesday with Nate's birthday crew to kick off the celebration at <strong>Mount Princeton Hot Springs Resort</strong> — a stunning property nestled in the Collegiate Peaks with natural geothermal pools flowing right through the grounds. It will serve as home base for tackling whitewater, riding a scenic train through the Royal Gorge, and spending evenings soaking under the stars.<br><br>
+    You arrive Friday for Courtney's wedding festivities and we'll be checking out of the cabin that morning to come meet everyone at the hotel in Colorado Springs. After the wedding Saturday, we wanted to add one more adventure before everyone heads home — a <strong>Browns Canyon Half-Day raft trip Sunday afternoon</strong> on the Arkansas River. It's one of the best stretches of whitewater in Colorado and completely approachable for everyone. Read on for all the details!</p>
+  </div>
+  <div class="week-split">
+    <div class="week-card bday">
+      <span class="wk-kick">🎉 Nate's Birthday · Jul 28–31</span>
+      <div class="wk-title">Birthday Week in Buena Vista</div>
+      <p class="wk-desc">The group heads out early: hot springs at Mount Princeton, a full-day run on The Numbers, and the Royal Gorge Vista Dome train. We check out Friday afternoon and drive to Colorado Springs to join everyone.</p>
+    </div>
+    <div class="week-card wed">
+      <span class="wk-kick">★ Family Weekend · Jul 31–Aug 3</span>
+      <div class="wk-title">Wedding + One Last Adventure</div>
+      <p class="wk-desc">The whole family gathers in Colorado Springs Friday — Nathan's Early birthday Dinner! — for a low-key evening together before Courtney's wedding Saturday. Then Sunday afternoon we hit Browns Canyon for a half-day raft trip before everyone flies home Monday.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BIRTHDAY WEEK ACTIVITIES -->
+<section>
+  <div class="section-label">What We'll Be Up To</div>
+  <h2 class="section-title">The Birthday Adventures</h2>
+  <div class="divider"></div>
+  <p style="color:var(--cream-muted);font-size:.95rem;max-width:640px;line-height:1.6;margin-bottom:.5rem;">Here's a peek at what the birthday crew has been doing out in Buena Vista — tap any card for more details and photos.</p>
+
+  <div class="activities-grid">
+    <div class="activity-card interactive" onclick="openModal('springsModal')">
+      <span class="card-icon">01</span>
+      <div class="card-tag">Jul 28–31 · Home Base</div>
+      <div class="card-title">Hot Springs & Cabin</div>
+      <p class="card-body">Mount Princeton Hot Springs Resort in Buena Vista — a private cabin at 8,900 feet with natural geothermal pools, mountain views, and Chalk Creek running through the property.</p>
+      <button class="book-link">View Details <span class="arrow">→</span></button>
+    </div>
+    <div class="activity-card interactive" onclick="openModal('raftModal')">
+      <span class="card-icon">02</span>
+      <div class="card-tag">Wed, July 29</div>
+      <div class="card-title">The Numbers Full Day</div>
+      <p class="card-body">The most technical stretch of the Arkansas River — 14 miles of near-continuous Class IV rapids. A full-day adventure with a riverside BBQ lunch. The Numbers are no joke!</p>
+      <button class="book-link">View Details <span class="arrow">→</span></button>
+    </div>
+    <div class="activity-card interactive" onclick="openModal('trainModal')">
+      <span class="card-icon">03</span>
+      <div class="card-tag">Thu, July 30</div>
+      <div class="card-title">Royal Gorge Train</div>
+      <p class="card-body">The Royal Gorge Route Vista Dome Railroad — glass-ceiling dome cars winding through a canyon with 1,000-foot granite walls above the Arkansas River. Unforgettable scenery and a fresh grill menu onboard.</p>
+      <button class="book-link">View Details <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- BROWNS CANYON SPOTLIGHT -->
+  <div class="spotlight-band">
+    <div class="spotlight-kicker">★ Sunday Aug 2 · Everyone Together</div>
+    <h3 class="spotlight-title">Browns Canyon Half-Day Raft Trip</h3>
+    <p class="spotlight-body">This is the one we're most excited to share — Browns Canyon is a National Monument and one of the most celebrated stretches of whitewater in all of Colorado. The half-day trip runs 1:30 PM to ~4:30 PM and is an absolutely perfect fit for the whole group. Fun Class II–III rapids, stunning high-desert canyon scenery, and guides who know every rapid by name and have a story for each one. No experience needed — just a sense of adventure.</p>
+    <div class="rapids-row">
+      <span class="rb">💧 Zoom Flume</span>
+      <span class="rb">💧 Big Drop</span>
+      <span class="rb">💧 The Toilet Bowl</span>
+      <span class="rb">⏱ 1:30 PM – 4:30 PM</span>
+      <span class="rb">✓ Ages 7+</span>
+    </div>
+    <button class="spotlight-cta" onclick="openModal('brownsModal')">View Full Details →</button>
+    <div class="spotlight-imgs">
+      <img src="whitewaterGirl.jpg" alt="Rafting Browns Canyon">
+      <img src="whitewaterGroup.jpg" alt="Group on the river">
+      <img src="whitewaterRaft.jpg" alt="Whitewater action">
+    </div>
+  </div>
+</section>
+
+<!-- FULL ITINERARY -->
+<section class="itin-section">
+  <div class="section-label">Day by Day</div>
+  <h2 class="section-title">Full Trip Itinerary</h2>
+  <div class="divider"></div>
+  <p style="color:var(--cream-muted);font-size:.95rem;max-width:640px;line-height:1.6;margin-bottom:2rem;">Tap any day to expand the full schedule. The first four days are the birthday crew's adventure out west — you all join Friday in Colorado Springs for the wedding weekend.</p>
+
+  <div class="phase-row">
+    <span class="phase-pill bp">🎉 Nate's Birthday Week — Buena Vista</span>
+    <span class="phase-line"></span>
+  </div>
+
+  <div class="day-block">
+    <div class="day-label"><div class="day-num">1</div><span class="day-date">TUE<br>JUL 28</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">Arrive + Check In</div><div class="day-prev">Fly into Colorado Springs, grab the SUV, and make the two-hour drive to Mount Princeton.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">6:50 AM</span><span>✈️ Depart Austin (AUS) — Southwest WN374/554, 1 stop PHX</span></li>
+          <li class="ev"><span class="ev-t">11:35 AM</span><span>🛬 Arrive Colorado Springs (COS) — 5h 45m total travel</span></li>
+          <li class="ev"><span class="ev-t">12:30 PM</span><span>🚗 Pick up the SUV at COS airport — start the scenic drive through the Arkansas Valley</span></li>
+          <li class="ev"><span class="ev-t">~2:30 PM</span><span>🏔️ Arrive Mount Princeton Hot Springs Resort — check in to the private cabin</span></li>
+          <li class="ev"><span class="ev-t">Evening</span><span>♨️ First soak in the geothermal hot springs — settle in and breathe the mountain air at 8,900 ft</span></li>
+        </ul>
+        <div class="drive-note"><span class="di">🚗</span><span>COS Airport → Mount Princeton Hot Springs: <strong>~2 hrs / 110 miles</strong> — scenic drive through Salida and the Collegiate Peaks</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-block">
+    <div class="day-label"><div class="day-num">2</div><span class="day-date">WED<br>JUL 29</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">Whitewater Day</div><div class="day-prev">Full day on The Numbers — the Arkansas River's legendary Class IV gauntlet, with a riverside BBQ lunch mid-river.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">Morning</span><span>☕ Early breakfast and gear up at the cabin</span></li>
+          <li class="ev"><span class="ev-t">~9 AM</span><span>🚗 Short drive to American Adventure Expeditions in Buena Vista</span></li>
+          <li class="ev"><span class="ev-t">~9:30 AM</span><span>🛶 Suit up — wetsuit, helmet, paddle — and safety briefing with the guide team</span></li>
+          <li class="ev"><span class="ev-t">10 AM–4 PM</span><span>🌊 <span class="ev-link" onclick="openModal('raftModal')">The Numbers Full Day Deluxe Tour</span> — 14 miles of Class IV rapids. Riverside BBQ lunch mid-river.</span></li>
+          <li class="ev"><span class="ev-t">Evening</span><span>♨️ Back to Mount Princeton — hot springs soak is a whole different experience after a day like that</span></li>
+        </ul>
+        <div class="drive-note"><span class="di">🚗</span><span>Resort → American Adventure: <strong>~15 min / 12 miles</strong></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-block">
+    <div class="day-label"><div class="day-num">3</div><span class="day-date">THU<br>JUL 30</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">Royal Gorge Railroad</div><div class="day-prev">Slow morning at the resort, then an afternoon ride through one of Colorado's most dramatic canyons aboard the Vista Dome.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">Morning</span><span>🌅 Leisurely morning — hot springs, coffee on the cabin deck, maybe a short hike</span></li>
+          <li class="ev"><span class="ev-t">~1 PM</span><span>🚗 Drive to Cañon City for the Royal Gorge Route Railroad</span></li>
+          <li class="ev"><span class="ev-t">3:30 PM</span><span>🚂 <span class="ev-link" onclick="openModal('trainModal')">Vista Dome departure</span> — glass-ceiling cars thread through 1,000-ft granite walls. Grill menu served onboard.</span></li>
+          <li class="ev"><span class="ev-t">Evening</span><span>🌆 Drive back to the resort — dinner, hot springs, incredible star gazing</span></li>
+        </ul>
+        <div class="drive-note"><span class="di">🚗</span><span>Mount Princeton → Royal Gorge Railroad (Cañon City): <strong>~1 hr 15 min / 60 miles</strong></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-block">
+    <div class="day-label"><div class="day-num">4</div><span class="day-date">FRI<br>JUL 31</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">🎂 Nate's Early Birthday + Family Arrives</div><div class="day-prev">Checkout morning, send the friends off at COS airport, then meet the whole family at the hotel. Chill birthday evening together.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">Morning</span><span>🌄 Final morning at Mount Princeton — one last soak, breakfast, pack up the cabin</span></li>
+          <li class="ev"><span class="ev-t">~10 AM</span><span>🧳 Checkout and load the SUV — say goodbye to Buena Vista</span></li>
+          <li class="ev"><span class="ev-t">~10:30 AM</span><span>🚗 Drive from Buena Vista to Colorado Springs airport (~2 hrs)</span></li>
+          <li class="ev"><span class="ev-t">~12:30 PM</span><span>✈️ Drop friends off at COS airport for their flights home — great trip, guys!</span></li>
+          <li class="ev"><span class="ev-t">~1:00 PM</span><span>🏨 Head to the hotel — check in and meet the family as they arrive</span></li>
+          <li class="ev"><span class="ev-t">Evening</span><span>🎂 Nathan's birthday dinner together — low-key, relaxed, the whole crew in one place</span></li>
+        </ul>
+        <div class="drive-note"><span class="di">🚗</span><span>Mount Princeton → COS Airport → Hotel: <strong>~2 hrs / 110 miles</strong> — drop friends, then 10 min to the hotel</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-row" style="margin-top:2rem">
+    <span class="phase-pill wp">★ Family Weekend — Colorado Springs · Jul 31–Aug 3</span>
+    <span class="phase-line gline"></span>
+  </div>
+
+  <div class="day-block fday">
+    <div class="day-label"><div class="day-num">5</div><span class="day-date">SAT<br>AUG 1</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">Courtney's Wedding 💒</div><div class="day-prev">The big day! Ceremony and reception in Colorado Springs — enjoy every minute.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">All Day</span><span>💒 Courtney's wedding — ceremony and reception in Colorado Springs. Celebrate!</span></li>
+          <li class="ev"><span class="ev-t">Evening</span><span>🎉 Enjoy the reception — we've got a later rafting departure Sunday so no early alarms tonight</span></li>
+        </ul>
+        <div class="drive-note" style="border-color:rgba(95,168,112,.2)"><span class="di" style="color:var(--green-light)">⏰</span><span style="color:var(--cream-muted)">Good news — <strong style="color:var(--green-light)">rafting doesn't launch until 1:30 PM Sunday</strong>, so enjoy the reception! We'll leave Colorado Springs around 11 AM.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-block fday">
+    <div class="day-label"><div class="day-num">6</div><span class="day-date">SUN<br>AUG 2</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">★ Browns Canyon Rafting</div><div class="day-prev">Relaxed morning, then everyone drives out to Buena Vista for the 1:30 PM Browns Canyon launch — off the water by 4:30 PM.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">Morning</span><span>☕ Relaxed morning — no rush today, enjoy breakfast and coffee before the drive</span></li>
+          <li class="ev"><span class="ev-t">~11:00 AM</span><span>🚗 Depart Colorado Springs for the Buena Vista Rafting Outpost (~2 hrs)</span></li>
+          <li class="ev"><span class="ev-t">12:45 PM</span><span>📋 Arrive and check in — gear up 45 minutes before the 1:30 launch</span></li>
+          <li class="ev"><span class="ev-t">1:30 PM</span><span>🌊 <span class="ev-link" onclick="openModal('brownsModal')">Browns Canyon Half-Day launches</span> — Class II–III rapids, National Monument scenery, and river jokes from the guides</span></li>
+          <li class="ev"><span class="ev-t">~4:30 PM</span><span>🏁 Off the water — stories, photos, probably some sore arms</span></li>
+          <li class="ev"><span class="ev-t">Evening</span><span>🚗 Drive back to Colorado Springs (~2 hrs) — dinner together, last night in Colorado</span></li>
+        </ul>
+        <div class="drive-note"><span class="di">🚗</span><span>Colorado Springs → Buena Vista Rafting Outpost: <strong>~2 hrs / 115 miles</strong> each way</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-block fday" style="margin-bottom:0">
+    <div class="day-label"><div class="day-num">7</div><span class="day-date">MON<br>AUG 3</span></div>
+    <div class="day-content" onclick="toggleDay(this)">
+      <div class="day-head">
+        <div class="day-head-l"><div class="day-title">Fly Home</div><div class="day-prev">Everyone heads to Colorado Springs Airport for the journey home — mountain memories packed and ready.</div></div>
+        <div class="expand-btn">▾</div>
+      </div>
+      <div class="day-detail">
+        <ul class="ev-list">
+          <li class="ev"><span class="ev-t">Morning</span><span>🧳 Check out of hotel, load up, head to COS airport</span></li>
+          <li class="ev"><span class="ev-t">11:10 AM</span><span>✈️ Southwest WN4325/553 departs COS — 1 stop DEN, arriving Austin 4:30 PM</span></li>
+        </ul>
+        <div class="drive-note"><span class="di">📍</span><span>Colorado Springs Airport (COS) — everyone departing from the same airport makes logistics easy!</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAVEL INFO -->
+<section>
+  <div class="section-label">Getting There</div>
+  <h2 class="section-title">Travel & Flights</h2>
+  <div class="divider"></div>
+  <p style="color:var(--cream-muted);font-size:.95rem;max-width:640px;line-height:1.6;margin-bottom:.5rem;">Our outbound and return flights both go through Colorado Springs. We will also have our own rental car — airport pickup and return at Colorado Springs Airport.</p>
+  <div class="flights-grid">
+    <div class="flight-card">
+      <div class="flight-header">
+        <div class="flight-route"><span>AUS</span><span class="pln">→</span><span>COS</span></div>
+        <span class="fbadge">Outbound</span>
+      </div>
+      <div class="fd"><span>Date</span><strong>Tue, July 28, 2026</strong></div>
+      <div class="fd"><span>Times</span><strong>6:50 AM → 11:35 AM</strong></div>
+      <div class="fd"><span>Flights</span><strong>WN374 / WN554 (1 stop PHX)</strong></div>
+      <div class="fd"><span>Travel Time</span><strong>5 hrs 45 min</strong></div>
+    </div>
+    <div class="flight-card">
+      <div class="flight-header">
+        <div class="flight-route"><span>COS</span><span class="pln">→</span><span>AUS</span></div>
+        <span class="fbadge ret">Return</span>
+      </div>
+      <div class="fd"><span>Date</span><strong>Mon, August 3, 2026</strong></div>
+      <div class="fd"><span>Times</span><strong>11:10 AM → 4:30 PM</strong></div>
+      <div class="fd"><span>Flights</span><strong>WN4325 / WN553 (1 stop DEN)</strong></div>
+      <div class="fd"><span>Travel Time</span><strong>4 hrs 20 min</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<div class="closing">
+  <div class="section-label" style="text-align:center;margin-bottom:.7rem">Can't Wait!</div>
+  <h2 class="section-title" style="color:var(--white);text-align:center;font-size:clamp(2rem,5vw,3.2rem)">See You All in Colorado</h2>
+  <div class="divider" style="margin:1.2rem auto 1.5rem"></div>
+  <p>We are so excited for Courtney's wedding — and so glad we get to squeeze in a Colorado adventure before everyone heads home. Browns Canyon is going to be an absolute blast. Wear clothes you don't mind getting soaked and bring a camera — the canyon is stunning.</p>
+  <div class="closing-badges">
+    <span class="cbadge">🏔️ Mount Princeton Resort</span>
+    <span class="cbadge">🚂 Royal Gorge Railroad</span>
+    <span class="cbadge">🌊 Browns Canyon Rafting</span>
+    <span class="cbadge">💒 Courtney's Wedding</span>
+    <span class="cbadge">✈️ Colorado Springs</span>
+  </div>
+</div>
+<footer>Made with ❤️ for the Colorado trip · July 28 – August 3, 2026</footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="springsModal" onclick="closeModal(event,'springsModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null,'springsModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Mount Princeton Hot Springs Resort</h2>
+      <p class="modal-tagline">Geothermal pools, Collegiate Peaks views, and a cabin with everyone under one roof.</p>
+    </div>
+    <div class="modal-body">
+      <p>Perched at 8,900 feet in the Collegiate Peaks Wilderness, Mount Princeton Hot Springs Resort sits along Chalk Creek with natural geothermal water flowing into a sprawling system of pools, slides, and creekside soaking channels. The private cabin sleeps the full group and comes with property-wide hot springs access — the perfect home base for a mountain adventure.</p>
+    </div>
+    <div class="modal-gallery">
+      <img src="springsCabin.jpg" alt="The cabin at Mount Princeton">
+      <img src="springsCreek.jpg" alt="Creekside soaking pools">
+      <img src="springsSlide.jpg" alt="Hot springs waterslide">
+    </div>
+    <ul class="modal-features">
+      <li>Private cabin with full kitchen — King, two Queens, and sleeper sofa</li>
+      <li>Full access to geothermal hot springs pools, slides, and creekside channels</li>
+      <li>Dedicated Spa & Club for adults (16+)</li>
+      <li>Complementary mountain bike and snowshoe rentals on property</li>
+      <li>Minutes from downtown Buena Vista dining and trailheads</li>
+      <li>Surrounded by 14,000-foot Collegiate Peaks — one of the most scenic settings in Colorado</li>
+    </ul>
+    <div class="modal-footer"><a class="excta" href="https://mtprinceton.com/" target="_blank" rel="noopener">Explore Mount Princeton Resort →</a></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="raftModal" onclick="closeModal(event,'raftModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null,'raftModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">The Numbers — Full Day</h2>
+      <p class="modal-tagline">14 miles. Near-continuous Class IV rapids. One of the hardest commercially run rivers in America.</p>
+    </div>
+    <div class="modal-body">
+      <p>The Numbers section of the Arkansas River earns its reputation — numbered rapids one through five-plus drop through a tight canyon with almost no rest in between. It's a serious day on the water and one the birthday crew won't forget. Full wetsuit and splash jacket package included, riverside BBQ lunch midway through.</p>
+    </div>
+    <div class="modal-gallery">
+      <img src="waterBoat.jpg" alt="Hitting the Numbers rapids">
+      <img src="waterCouple.jpg" alt="Rafters on the Arkansas River" style="object-position:50% 30%">
+      <img src="waterGroup.jpg" alt="Group photo on the river">
+    </div>
+    <ul class="modal-features">
+      <li>14+ miles of near-continuous Class III–IV whitewater on the Arkansas River</li>
+      <li>Riverside BBQ lunch included mid-river</li>
+      <li>Wetsuit and splash jacket package included</li>
+      <li>Expert guides navigate every technical drop</li>
+      <li>Ages 15+ required for this advanced section</li>
+    </ul>
+    <div class="modal-footer"><a class="excta" href="https://www.americanadventure.com/tour/the-numbers-deluxe-tour/" target="_blank" rel="noopener">Learn About The Numbers Deluxe Tour →</a></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="trainModal" onclick="closeModal(event,'trainModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null,'trainModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Royal Gorge Route Railroad</h2>
+      <p class="modal-tagline">Glass-topped dome cars winding through 1,000-foot granite walls.</p>
+    </div>
+    <div class="modal-body">
+      <p>The Royal Gorge Route Railroad is one of America's most spectacular scenic train rides — vintage Vista Dome cars with glass ceilings roll through the heart of the Royal Gorge, a canyon carved over millions of years with walls towering 1,000 feet above the river below. A fresh grill menu is served onboard, and an open-air gondola car puts you completely in the elements.</p>
+    </div>
+    <div class="modal-gallery">
+      <img src="trainVista.jpg" alt="Vista Dome car interior">
+      <img src="trainMen.jpg" alt="Onboard dining">
+      <img src="trainOpen.jpg" alt="Open air gondola in the gorge">
+    </div>
+    <ul class="modal-features">
+      <li>Glass-ceiling Vista Dome cars with panoramic canyon views above and around</li>
+      <li>Open-air gondola car for the full canyon immersion experience</li>
+      <li>Fresh grill menu prepared and served onboard</li>
+      <li>~90 minutes winding through one of Colorado's most iconic natural wonders</li>
+      <li>Departs Cañon City — about 1h 15min from Buena Vista</li>
+    </ul>
+    <div class="modal-footer"><a class="excta" href="https://royalgorgeroute.com/ride/" target="_blank" rel="noopener">Explore Royal Gorge Route Railroad →</a></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="brownsModal" onclick="closeModal(event,'brownsModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null,'brownsModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Browns Canyon Half Day</h2>
+      <p class="modal-tagline">Colorado's most beloved whitewater stretch — and the perfect family adventure.</p>
+    </div>
+    <div class="modal-body">
+      <p>Browns Canyon National Monument is considered one of the best whitewater rafting sections in all of Colorado. The half-day trip delivers the perfect balance: exciting Class II–III rapids mixed with calmer stretches where you can soak in the stunning high-desert canyon scenery. Guides share local geology, history, and plenty of river stories along the way. First-timers and experienced rafters alike leave grinning.</p>
+    </div>
+    <div class="modal-gallery">
+      <img src="whitewaterGirl.jpg" alt="Rafting Browns Canyon">
+      <img src="whitewaterGroup.jpg" alt="Group on Browns Canyon">
+      <img src="whitewaterRaft.jpg" alt="Whitewater action in Browns Canyon">
+    </div>
+    <ul class="modal-features gbul">
+      <li>Half-day trip — 1:30 PM to ~4:30 PM Sunday, August 2</li>
+      <li>Class II–III rapids — fun and exciting for everyone, approachable for first-timers</li>
+      <li>Browns Canyon National Monument — some of Colorado's most beautiful canyon scenery</li>
+      <li>Named rapids: Zoom Flume, Big Drop, The Toilet Bowl — each with its own story</li>
+      <li>Guides share local history, geology, and river lore throughout</li>
+      <li>Check-in 45 minutes before launch — arrive by 12:45 PM at the Buena Vista Outpost</li>
+      <li>Ages 7+ welcome — this one's great for the whole family!</li>
+    </ul>
+    <div class="modal-footer"><a class="excta gn" href="https://www.americanadventure.com/tour/browns-canyon-classic-tour/" target="_blank" rel="noopener">Learn About Browns Canyon Half Day →</a></div>
+  </div>
+</div>
+
+<script>
+  const sc = document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2.5+0.8;
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*70}%;width:${sz}px;height:${sz}px;--dur:${(Math.random()*3+2).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s;`;
+    sc.appendChild(s);
+  }
+  function openModal(id){document.getElementById(id).classList.add('active');document.body.style.overflow='hidden'}
+  function closeModal(e,id){if(!e||e.target.classList.contains('modal-overlay')||e.target.classList.contains('modal-close')){document.getElementById(id).classList.remove('active');document.body.style.overflow='auto'}}
+  function toggleDay(el){const open=el.classList.contains('open');document.querySelectorAll('.day-content.open').forEach(d=>d.classList.remove('open'));if(!open)el.classList.add('open')}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.active').forEach(m=>{m.classList.remove('active');document.body.style.overflow='auto'})}});
+</script>
+</body>
+</html>
