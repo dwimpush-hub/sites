@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nathan's Colorado Birthday 🏔️</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&family=Lora:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #0f1b2d;
+    --navy-mid: #162235;
+    --navy-card: #1d2e45;
+    --amber: #e8a838;
+    --amber-light: #f5c96a;
+    --orange: #d9602a;
+    --cream: #f5ede0;
+    --cream-muted: #b8a990;
+    --green: #3d7a52;
+    --green-light: #5fa870;
+    --white: #ffffff;
+    --border: rgba(232, 168, 56, 0.2);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--cream);
+    font-family: 'Nunito', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ─────────────────────────────────────── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 8rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, #1f3a5c 0%, var(--navy) 65%);
+    z-index: 0;
+  }
+
+  /* Stars */
+  .stars {
+    position: absolute; inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  
+  .star {
+    position: absolute;
+    background: var(--amber-light);
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+    transition: transform 0.1s linear;
+  }
+
+  @keyframes twinkle { 
+    from { opacity: 0.1; box-shadow: 0 0 0 rgba(245,201,106,0); } 
+    to { opacity: 1; box-shadow: 0 0 6px rgba(245,201,106,0.8); } 
+  }
+
+  /* Mountain silhouette */
+  .mountains {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 820px; }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: rgba(232,168,56,0.1);
+    border: 1px solid rgba(232,168,56,0.3);
+    padding: 0.4rem 1.2rem;
+    border-radius: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4.5rem, 12vw, 9rem);
+    line-height: 0.9;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    animation: fadeUp 0.8s 0.15s ease both;
+    text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+  }
+
+  .hero-title span { color: var(--amber); }
+
+  .hero-subtitle {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    color: var(--cream-muted);
+    margin-top: 1.2rem;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 2rem;
+    background: var(--orange);
+    color: var(--white);
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 0.65rem 1.6rem;
+    border-radius: 2rem;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+
+  .hero-date-badge .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.6); border-radius: 50%; display: inline-block; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--cream-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  
+  .scroll-hint::after { content: ''; display: block; width: 1.5px; height: 28px; background: linear-gradient(to bottom, var(--amber), transparent); margin: 0 auto; }
+
+  @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── SECTIONS ──────────────────────────────────── */
+  section { padding: 5rem 2rem; max-width: 1060px; margin: 0 auto; }
+
+  .section-label {
+    font-weight: 800;
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.7rem;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 3.8rem);
+    line-height: 1.05;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: var(--amber);
+    border-radius: 2px;
+    margin: 1.2rem 0 2rem;
+  }
+
+  /* ── BLURB ─────────────────────────────────────── */
+  .blurb-section { border-bottom: 1px solid var(--border); }
+
+  .blurb-box {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 0 12px 12px 0;
+    padding: 2.2rem 2.5rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--cream);
+    position: relative;
+  }
+
+  .blurb-box .quote-mark {
+    font-family: 'Lora', serif;
+    font-size: 5rem;
+    line-height: 1;
+    color: var(--amber);
+    opacity: 0.3;
+    position: absolute;
+    top: 0.5rem;
+    left: 1.5rem;
+    pointer-events: none;
+  }
+
+  .blurb-box p { position: relative; z-index: 1; }
+
+  /* ── ACTIVITY CARDS ───────────────────────────── */
+  .activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .activity-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .activity-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--amber);
+    box-shadow: 0 12px 40px rgba(232,168,56,0.12);
+  }
+
+  .activity-card.interactive {
+    cursor: pointer;
+  }
+
+  .activity-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(232,168,56,0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(20px, -20px);
+  }
+
+  .card-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.8;
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.9rem;
+    color: var(--white);
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-body {
+    font-size: 0.95rem;
+    color: var(--cream-muted);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-cost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 1.15rem;
+    padding: 0.42rem 0.82rem;
+    border-radius: 999px;
+    background: rgba(232,168,56,0.1);
+    border: 1px solid rgba(232,168,56,0.22);
+    color: var(--amber-light);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .card-cost strong {
+    color: var(--white);
+    font-size: 0.9rem;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2rem;
+    background: rgba(232,168,56,0.12);
+    color: var(--amber-light);
+    border: 1px solid rgba(232,168,56,0.25);
+    margin-bottom: 1rem;
+  }
+
+  .book-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--amber);
+    text-decoration: none;
+    border-bottom: 1.5px solid transparent;
+    transition: border-color 0.2s, gap 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+  }
+  .book-link:hover { border-color: var(--amber); gap: 0.7rem; }
+  .book-link .arrow { font-size: 1rem; }
+
+  /* ── HORIZONTAL DAILY TIMELINE ─────────────────── */
+  .daily-timeline-wrap {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .timeline-intro {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .timeline-intro h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    color: var(--white);
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+
+  .timeline-intro p {
+    max-width: 520px;
+    color: var(--cream-muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .horizontal-timeline {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 1rem;
+    padding-top: 2.1rem;
+  }
+
+  .horizontal-timeline::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 11%;
+    right: 11%;
+    height: 2px;
+    background: linear-gradient(to right, rgba(232,168,56,0.15), var(--amber), rgba(232,168,56,0.15));
+    opacity: 0.8;
+  }
+
+  .timeline-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(29,46,69,0.98), rgba(22,34,53,0.96));
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.16);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .timeline-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(232,168,56,0.55);
+    box-shadow: 0 18px 44px rgba(232,168,56,0.1);
+  }
+
+  .timeline-dot {
+    position: absolute;
+    top: -2.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--navy);
+    border: 5px solid var(--navy);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    box-shadow: 0 0 0 1px rgba(232,168,56,0.28), 0 8px 22px rgba(0,0,0,0.22);
+  }
+
+  .timeline-image {
+    width: 100%;
+    height: 145px;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.98) contrast(1.02);
+  }
+
+  .timeline-card-body {
+    padding: 1.2rem 1.2rem 1.35rem;
+  }
+
+  .timeline-date {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    background: rgba(232,168,56,0.1);
+    border: 1px solid rgba(232,168,56,0.22);
+    border-radius: 999px;
+    padding: 0.25rem 0.65rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .timeline-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--white);
+    font-size: 1.65rem;
+    line-height: 1;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-card p {
+    color: var(--cream-muted);
+    font-size: 0.88rem;
+    line-height: 1.48;
+  }
+
+  /* ── MODAL ─────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 18, 31, 0.9);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .modal-content {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 3rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--white);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--amber); color: var(--navy); border-color: var(--amber); transform: rotate(90deg); }
+
+  .modal-header { text-align: center; margin-bottom: 2rem; }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--white);
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+  
+  .modal-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--amber);
+    margin-top: 0.5rem;
+  }
+  .modal-price span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--cream-muted);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-left: 0.4rem;
+  }
+
+  .modal-body-text { font-size: 1.1rem; color: var(--cream); margin-bottom: 1.5rem; text-align: center; }
+  .modal-body-text p { margin-bottom: 1rem; }
+
+  .modal-price-note {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 0.4rem;
+    padding: 0.42rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(95,168,112,0.12);
+    border: 1px solid rgba(95,168,112,0.32);
+    color: var(--green-light);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .modal-cost-callout {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 auto 1.8rem;
+    padding: 1rem 1.2rem;
+    max-width: 520px;
+    background: rgba(15,27,45,0.58);
+    border: 1px solid rgba(232,168,56,0.25);
+    border-radius: 14px;
+    text-align: left;
+  }
+  .modal-cost-callout span {
+    display: block;
+    color: var(--cream-muted);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .modal-cost-callout strong {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--amber);
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .modal-features {
+    list-style: none;
+    margin-bottom: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .modal-features li {
+    position: relative;
+    padding-left: 2rem;
+    font-size: 0.95rem;
+    color: var(--cream-muted);
+  }
+  .modal-features li::before {
+    content: '✦';
+    position: absolute;
+    left: 0; top: 0;
+    color: var(--amber);
+    font-size: 1.2rem;
+  }
+
+  .modal-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .modal-gallery img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .modal-gallery img:first-child { grid-column: span 2; height: 300px; }
+
+  .modal-footer { text-align: center; }
+  .modal-footer.action-stack {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .external-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.8rem;
+    border-radius: 2rem;
+    background: var(--amber);
+    color: var(--navy);
+    font-weight: 900;
+    font-size: 0.92rem;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .external-cta:hover {
+    background: var(--amber-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(232,168,56,0.18);
+  }
+  .external-cta.alt {
+    background: transparent;
+    color: var(--amber-light);
+    border: 1px solid rgba(232,168,56,0.35);
+  }
+  .external-cta.alt:hover {
+    background: rgba(232,168,56,0.12);
+    color: var(--white);
+  }
+
+  /* ── ITINERARY ─────────────────────────────────── */
+  .itinerary-section { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .day-block {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 0 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .day-block:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 44px;
+    top: 56px;
+    width: 2px;
+    height: calc(100% - 40px);
+    background: linear-gradient(to bottom, var(--amber), transparent);
+    opacity: 0.3;
+  }
+
+  .day-label { text-align: center; padding-top: 0.3rem; }
+
+  .day-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--navy);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    margin: 0 auto 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .day-date {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cream-muted);
+    display: block;
+    text-align: center;
+  }
+
+  .day-content {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 1.8rem;
+  }
+
+  .day-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--white);
+    letter-spacing: 0.03em;
+    margin-bottom: 0.6rem;
+  }
+
+  .event-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .event-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: 0.95rem;
+    color: var(--cream);
+  }
+
+  .event-time {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--amber);
+    min-width: 60px;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .event-link {
+    color: var(--cream);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(245,201,106,0.4);
+    transition: color 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .event-link:hover { color: var(--amber); border-color: var(--amber); }
+
+  /* ── FLIGHTS & RENTAL ─────────────────────────── */
+  .flights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .flight-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 1.8rem;
+    transition: border-color 0.2s;
+  }
+  .flight-card:hover { border-color: var(--amber); }
+
+  .flight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .flight-route {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+  }
+
+  .flight-route .plane { font-size: 1.1rem; color: var(--amber); font-family: sans-serif; }
+
+  .flight-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 2rem;
+    background: rgba(61,122,82,0.2);
+    color: var(--green-light);
+    border: 1px solid rgba(61,122,82,0.4);
+  }
+
+  .flight-badge.orange {
+    background: rgba(217,96,42,0.15);
+    color: #e88a5a;
+    border-color: rgba(217,96,42,0.35);
+  }
+
+  .flight-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+    color: var(--cream-muted);
+  }
+  .flight-detail strong { color: var(--cream); font-weight: 700; }
+
+  .flight-cta {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 2rem;
+    background: var(--amber);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .flight-cta:hover { background: var(--amber-light); transform: scale(1.03); }
+
+  /* Rental Card */
+  .rental-card {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-top: 1.5rem;
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: border-color 0.2s;
+  }
+  .rental-card:hover { border-color: var(--amber); }
+  
+  .rental-image img {
+    width: 280px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  .rental-info { flex: 1; }
+  
+  .rental-info .flight-price {
+    margin-top: 1rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--amber);
+    letter-spacing: 0.04em;
+  }
+  .rental-info .flight-price span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cream-muted);
+    margin-left: 0.3rem;
+  }
+
+
+  /* ── INTERACTIVE COST BUILDER ─────────────────── */
+  .cost-section {
+    border-top: 1px solid var(--border);
+    padding-top: 4rem;
+  }
+
+  .cost-intro {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+  }
+
+  .cost-intro-copy { max-width: 780px; }
+  .cost-intro-copy p {
+    font-size: 0.95rem;
+    color: var(--cream-muted);
+    line-height: 1.6;
+  }
+
+  .base-pill {
+    min-width: 210px;
+    background: rgba(232,168,56,0.1);
+    border: 1px solid rgba(232,168,56,0.28);
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    text-align: right;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+  .base-pill span,
+  .base-pill em {
+    display: block;
+    color: var(--cream-muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+  .base-pill strong {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.1rem;
+    line-height: 1;
+    color: var(--amber);
+    letter-spacing: 0.04em;
+    margin: 0.3rem 0;
+  }
+
+  .cost-builder {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 1.4rem;
+    align-items: stretch;
+    margin-top: 1.5rem;
+  }
+
+  .builder-panel,
+  .total-panel {
+    background: linear-gradient(145deg, rgba(29,46,69,0.98), rgba(22,34,53,0.96));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .builder-panel { padding: 2rem; }
+  .total-panel {
+    padding: 2rem;
+    border-color: rgba(232,168,56,0.45);
+    box-shadow: 0 0 0 1px rgba(232,168,56,0.08), 0 18px 45px rgba(0,0,0,0.22);
+  }
+
+  .builder-panel::before,
+  .total-panel::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,56,0.12) 0%, transparent 68%);
+    pointer-events: none;
+  }
+
+  .builder-heading,
+  .summary-top {
+    position: relative;
+    z-index: 1;
+  }
+
+  .builder-kicker,
+  .summary-kicker {
+    color: var(--amber);
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
+  .builder-title,
+  .summary-title {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--white);
+    font-size: 2.1rem;
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+
+  .builder-copy {
+    color: var(--cream-muted);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    margin-top: 0.6rem;
+  }
+
+  .base-included-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.6rem;
+    padding: 1rem 1.1rem;
+    background: rgba(15,27,45,0.55);
+    border: 1px solid rgba(95,168,112,0.35);
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .included-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(95,168,112,0.16);
+    border: 1px solid rgba(95,168,112,0.42);
+    color: var(--green-light);
+    font-weight: 900;
+  }
+
+  .base-included-card h3 {
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .base-included-card p {
+    color: var(--cream-muted);
+    font-size: 0.82rem;
+    line-height: 1.35;
+    margin-top: 0.2rem;
+  }
+  .base-included-card strong {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--amber);
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .builder-subtitle {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--white);
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    margin-top: 1.8rem;
+  }
+
+  .builder-helper {
+    color: var(--cream-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+  }
+
+  .addon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .addon-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 215px;
+    padding: 1.2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(232,168,56,0.18);
+    background: rgba(15,27,45,0.52);
+    cursor: pointer;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+  }
+
+  .addon-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(232,168,56,0.55);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  }
+
+  .addon-card.is-selected {
+    background: linear-gradient(160deg, rgba(232,168,56,0.16), rgba(15,27,45,0.62));
+    border-color: var(--amber);
+    box-shadow: 0 0 0 1px rgba(232,168,56,0.1), 0 14px 34px rgba(232,168,56,0.08);
+  }
+
+  .addon-card input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  .addon-card:focus-within,
+  .mode-option:focus-within {
+    outline: 2px solid var(--amber-light);
+    outline-offset: 3px;
+  }
+
+  .addon-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .check-orb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(232,168,56,0.45);
+    background: rgba(232,168,56,0.08);
+    color: var(--amber);
+    font-weight: 900;
+    transition: all 0.2s;
+  }
+  .check-orb::before { content: '+'; font-size: 1.2rem; line-height: 1; }
+  .addon-card.is-selected .check-orb {
+    background: var(--amber);
+    color: var(--navy);
+    border-color: var(--amber);
+  }
+  .addon-card.is-selected .check-orb::before { content: '✓'; }
+
+  .addon-badge {
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.7rem;
+    border-radius: 2rem;
+    background: rgba(232,168,56,0.1);
+    color: var(--amber-light);
+    border: 1px solid rgba(232,168,56,0.22);
+  }
+
+  .addon-title {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: var(--white);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.85rem;
+    line-height: 1;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.55rem;
+  }
+
+  .addon-copy {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: var(--cream-muted);
+    font-size: 0.87rem;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .addon-price {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: var(--amber);
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+  .addon-price em {
+    color: var(--cream-muted);
+    font-size: 0.78rem;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .view-toggle {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1.4rem;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    position: relative;
+    z-index: 1;
+  }
+
+  .view-toggle-label {
+    color: var(--cream);
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .mode-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 46px;
+    padding: 0.55rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(232,168,56,0.22);
+    background: rgba(15,27,45,0.55);
+    color: var(--cream-muted);
+    font-weight: 900;
+    font-size: 0.86rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mode-option input {
+    accent-color: var(--amber);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .mode-option.is-selected {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--navy);
+    box-shadow: 0 8px 24px rgba(232,168,56,0.16);
+  }
+
+  .summary-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.2rem;
+  }
+
+  .summary-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(232,168,56,0.12);
+    border: 1px solid rgba(232,168,56,0.25);
+    color: var(--amber-light);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .summary-price {
+    position: relative;
+    z-index: 1;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--amber);
+    font-size: clamp(4rem, 8vw, 5.7rem);
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+    margin: 0.7rem 0 0.45rem;
+    text-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  }
+
+  .summary-label {
+    position: relative;
+    z-index: 1;
+    color: var(--cream);
+    font-weight: 900;
+    font-size: 1rem;
+    margin-bottom: 1.3rem;
+  }
+
+  .summary-list {
+    position: relative;
+    z-index: 1;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .summary-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--cream-muted);
+    font-size: 0.92rem;
+  }
+  .summary-list li strong { color: var(--cream); font-weight: 900; }
+  .summary-list li.is-hidden { display: none; }
+
+  .summary-equation {
+    position: relative;
+    z-index: 1;
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    background: rgba(15,27,45,0.55);
+    border: 1px dashed rgba(232,168,56,0.25);
+    color: var(--cream-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .cost-note {
+    position: relative;
+    z-index: 1;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--cream-muted);
+    line-height: 1.45;
+  }
+
+  .cost-note strong { color: var(--amber-light); }
+
+  /* ── RSVP SECTION ────────────────────────────── */
+  .rsvp-section {
+    text-align: center;
+    padding: 5rem 2rem 6rem;
+    background: linear-gradient(180deg, var(--navy) 0%, #101e31 100%);
+    border-top: 1px solid var(--border);
+  }
+
+  .rsvp-section .section-label, .rsvp-section .section-title, .rsvp-section p { max-width: 600px; margin-left: auto; margin-right: auto; }
+  .rsvp-section p { color: var(--cream-muted); margin-bottom: 2rem; }
+
+  .rsvp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 2.2rem;
+    background: var(--orange);
+    color: var(--white);
+    font-weight: 800;
+    font-size: 1rem;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .rsvp-btn:hover { background: #c4501f; transform: scale(1.04); }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: rgba(184,169,144,0.4);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── RESPONSIVE ──────────────────────────────── */
+  @media (max-width: 768px) {
+    .rental-card { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+    .rental-image img { width: 100%; max-width: 400px; }
+  }
+
+  @media (max-width: 640px) {
+    .day-block { grid-template-columns: 64px 1fr; gap: 0 1rem; }
+    .day-block:not(:last-child)::after { left: 31px; }
+    .day-number { width: 40px; height: 40px; font-size: 1.1rem; }
+    .blurb-box { padding: 1.5rem; }
+    .activities-grid, .addon-grid, .cost-builder, .horizontal-timeline { grid-template-columns: 1fr; }
+    .horizontal-timeline { padding-top: 0.5rem; }
+    .horizontal-timeline::before { display: none; }
+    .timeline-card { overflow: visible; }
+    .timeline-image { border-radius: 18px 18px 0 0; }
+    .timeline-dot { position: static; transform: none; margin: -1.2rem 0 -0.2rem 1rem; border-color: var(--navy-card); }
+    .timeline-intro { flex-direction: column; align-items: flex-start; }
+    .external-cta { width: 100%; }
+    .modal-cost-callout { grid-template-columns: 1fr; text-align: center; }
+  }
+
+  @media (max-width: 900px) {
+    .cost-intro { flex-direction: column; align-items: flex-start; }
+    .base-pill { width: 100%; text-align: left; }
+    .cost-builder { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .builder-panel, .total-panel { padding: 1.35rem; border-radius: 16px; }
+    .base-included-card { grid-template-columns: auto 1fr; }
+    .base-included-card strong { grid-column: 1 / -1; }
+    .addon-grid { grid-template-columns: 1fr; }
+    .view-toggle { grid-template-columns: 1fr; }
+    .mode-tabs { grid-template-columns: 1fr; }
+    .summary-top { flex-direction: column; }
+    .summary-price { font-size: 4rem; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="stars" id="stars"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Colorado &nbsp;·&nbsp; Summer Adventure &nbsp;·&nbsp; 2026</div>
+    <h1 class="hero-title">
+      Nathan's<br>
+      <span>Colorado</span><br>
+      Birthday
+    </h1>
+    <p class="hero-subtitle">Soaking, splashing, and riding the rails — celebrating in style.</p>
+    <div class="hero-date-badge">
+      <span class="dot"></span>
+      <span>July 28 - 31, 2026</span>
+      <span class="dot"></span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">scroll</div>
+
+  <div class="mountains">
+    <svg viewBox="0 0 1440 220" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <polygon points="0,220 180,60 340,150 520,30 700,130 880,20 1050,110 1230,50 1440,120 1440,220" fill="#0f1b2d"/>
+      <polygon points="0,220 200,100 380,170 560,80 720,160 900,70 1100,140 1300,90 1440,140 1440,220" fill="#0d1928" opacity="0.9"/>
+    </svg>
+  </div>
+</div>
+
+<section class="blurb-section">
+  <div class="section-label">The Plan</div>
+  <h2 class="section-title">Why Colorado?</h2>
+  <div class="divider"></div>
+
+  <div class="blurb-box">
+    <div class="quote-mark">"</div>
+    <p>
+      Nathan is turning another year older, and we're heading to the Rockies to celebrate him right. We've locked down a private cabin at Mount Princeton Hot Springs Resort in Buena Vista as our home base. The cabin features a full kitchen, sleeps up to 8 across a King, two Queens, and a sleeper sofa, and includes property-wide hot springs access. 
+      <br><br>
+      There is room to keep the trip flexible, too. If you want to squeeze in something extra, Mount Princeton has plenty to explore, and anyone who prefers a more traditional hotel setup can look into booking one of the resort's lodge rooms instead of joining the cabin split.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">What We're Doing</div>
+  <h2 class="section-title">The Adventures</h2>
+  <div class="divider"></div>
+
+  <div class="activities-grid">
+    <div class="activity-card interactive" onclick="openModal('springsModal')">
+      <span class="card-icon">01</span>
+      <div class="card-tag">July 28</div>
+      <div class="card-title">Hot Springs & Cabin</div>
+      <p class="card-body">Our cabin reservation includes full access to Mount Princeton's hot springs. Soak in natural geothermal waters right on the property to adjust to the altitude.</p>
+      <div class="card-cost">Base stay <strong>$350.00/person</strong></div>
+      <button class="book-link">View Details <span class="arrow">→</span></button>
+    </div>
+
+    <div class="activity-card interactive" onclick="openModal('raftModal')">
+      <span class="card-icon">02</span>
+      <div class="card-tag">July 29</div>
+      <div class="card-title">Whitewater Rafting</div>
+      <p class="card-body"><strong>The Numbers Full Day:</strong> Tackling continuous Class IV rapids on the Arkansas River. A full-day deluxe tour. ($204.30/person).</p>
+      <button class="book-link">View Details <span class="arrow">→</span></button>
+    </div>
+
+    <div class="activity-card interactive" onclick="openModal('trainModal')">
+      <span class="card-icon">03</span>
+      <div class="card-tag">July 30</div>
+      <div class="card-title">Mountain Train</div>
+      <p class="card-body"><strong>Royal Gorge Vista Dome:</strong> Enjoying unmatched views from glass-topped dome cars. Soak in the scenery at 3:30 PM. ($139.00/person).</p>
+      <button class="book-link">View Details <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <div class="daily-timeline-wrap">
+    <div class="timeline-intro">
+      <h3>Rough Daily Itinerary</h3>
+      <p>A simple day-by-day flow so everyone can picture the pace: settle in, splash hard, ride the rails, then head home with mountain stories.</p>
+    </div>
+
+    <div class="horizontal-timeline" aria-label="Rough daily itinerary">
+      <article class="timeline-card">
+        <span class="timeline-dot">01</span>
+        <img class="timeline-image" src="springsCabin.jpg" alt="Mount Princeton cabin and resort area">
+        <div class="timeline-card-body">
+          <span class="timeline-date">Tue · July 28</span>
+          <h4>Arrive + Soak</h4>
+          <p>Fly into Denver, grab the SUV, drive to Buena Vista, settle into the cabin, and unwind in the hot springs.</p>
+        </div>
+      </article>
+
+      <article class="timeline-card">
+        <span class="timeline-dot">02</span>
+        <img class="timeline-image" src="waterBoat.jpg" alt="Whitewater rafting boat on the river">
+        <div class="timeline-card-body">
+          <span class="timeline-date">Wed · July 29</span>
+          <h4>Whitewater Day</h4>
+          <p>Take on The Numbers full-day rafting trip, then return to the resort for a well-earned soak and relaxed evening.</p>
+        </div>
+      </article>
+
+      <article class="timeline-card">
+        <span class="timeline-dot">03</span>
+        <img class="timeline-image" src="trainVista.jpg" alt="Royal Gorge Route Vista Dome train">
+        <div class="timeline-card-body">
+          <span class="timeline-date">Thu · July 30</span>
+          <h4>Rails + Views</h4>
+          <p>Enjoy a slower morning before heading out for the Royal Gorge Vista Dome train and big canyon scenery.</p>
+        </div>
+      </article>
+
+      <article class="timeline-card">
+        <span class="timeline-dot">04</span>
+        <img class="timeline-image" src="denver.jpg" alt="Denver skyline at sunset">
+        <div class="timeline-card-body">
+          <span class="timeline-date">Fri · July 31</span>
+          <h4>Final Soak + Fly Home</h4>
+          <p>Ease into the last morning, pack up, road-trip back to Denver, and catch the evening flight home.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">Getting There</div>
+  <h2 class="section-title">Travel & Transport</h2>
+  <div class="divider"></div>
+
+  <div class="flights-grid">
+    <div class="flight-card">
+      <div class="flight-header">
+        <div class="flight-route"><span>AUS</span> <span class="plane">→</span> <span>DEN</span></div>
+        <span class="flight-badge">Outbound</span>
+      </div>
+      <div class="flight-detail"><span>Departure</span><strong>Tue, July 28</strong></div>
+      <div class="flight-detail"><span>Time</span><strong>8:25 AM - 9:35 AM</strong></div>
+      <div class="flight-detail"><span>Flight</span><strong>#2574 (Fastest)</strong></div>
+      <div class="flight-price">$95 <span>est. Basic Fare</span></div>
+    </div>
+
+    <div class="flight-card">
+      <div class="flight-header">
+        <div class="flight-route"><span>DEN</span> <span class="plane">→</span> <span>AUS</span></div>
+        <span class="flight-badge orange">Return</span>
+      </div>
+      <div class="flight-detail"><span>Departure</span><strong>Fri, July 31</strong></div>
+      <div class="flight-detail"><span>Time</span><strong>7:45 PM - 11:00 PM</strong></div>
+      <div class="flight-detail"><span>Flight</span><strong>#1950</strong></div>
+      <div class="flight-price">$129 <span>est. Basic Fare</span></div>
+    </div>
+  </div>
+
+  <p style="margin-top: 1.2rem; font-size: 0.85rem; color: var(--cream-muted);">
+    💡 Note on pricing: Prices reflect current basic fares. Keep an eye out for potential sales — fares fluctuate frequently!
+  </p>
+
+  <div class="rental-card">
+    <div class="rental-image"><img src="car.jpg" alt="Standard Elite SUV"></div>
+    <div class="rental-info">
+      <div class="flight-badge" style="display: inline-block; margin-bottom: 0.5rem; background: rgba(232,168,56,0.15); color: var(--amber); border-color: rgba(232,168,56,0.35);">Transportation</div>
+      <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--white); margin-bottom: 0.2rem; letter-spacing: 0.03em;">Standard Elite SUV</h3>
+      <p style="font-size: 0.95rem; color: var(--cream-muted); margin-bottom: 1.2rem; line-height: 1.5;">Pick Up: DEN (Jul 28) | Drop Off: DEN (Jul 31)</p>
+      <div class="flight-detail"><span>Total Rental</span><strong>$350.05</strong></div>
+      <div class="flight-price">~$70.01 <span>Total Per Person</span></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="cost-section" id="tripOptions">
+  <div class="cost-intro">
+    <div class="cost-intro-copy">
+      <div class="section-label">Trip Options</div>
+      <h2 class="section-title">Build Your Birthday Adventure</h2>
+      <div class="divider"></div>
+      <p>
+        Start with the base trip — cabin/resort stay, shared rental car, and estimated round-trip airfare — then toggle activities on or off to build your adventure estimate.
+      </p>
+    </div>
+    <div class="base-pill" aria-label="Starting base cost per person">
+      <span>Base Starts At</span>
+      <strong>$644.01</strong>
+      <em>per person</em>
+    </div>
+  </div>
+
+  <div class="cost-builder">
+    <div class="builder-panel">
+      <div class="builder-heading">
+        <div class="builder-kicker">Base Trip Included</div>
+        <h3 class="builder-title">Base trip + flights</h3>
+        <p class="builder-copy">This is the starting point for anyone joining for the cabin, hot springs, mountain downtime, shared transportation, and estimated round-trip flights.</p>
+      </div>
+
+      <div class="base-included-card">
+        <span class="included-icon">✓</span>
+        <div>
+          <h3>Cabin / Resort Stay + Hot Springs + Shared Rental Car + Estimated Airfare</h3>
+          <p>Mount Princeton Hot Springs Resort stay split with included hot springs access + estimated car split + current basic fare estimate.</p>
+        </div>
+        <strong>$644.01</strong>
+      </div>
+
+      <h3 class="builder-subtitle">Add Activities</h3>
+      <p class="builder-helper">Tap an activity to add it to the estimate. Tap again to remove it.</p>
+
+      <div class="addon-grid">
+        <label class="addon-card" data-addon-card="rafting">
+          <input class="trip-addon" id="addonRafting" type="checkbox" data-label="Whitewater Rafting" data-cost="204.30">
+          <span class="addon-top">
+            <span class="check-orb" aria-hidden="true"></span>
+            <span class="addon-badge">July 29</span>
+          </span>
+          <span class="addon-title">Whitewater Rafting</span>
+          <span class="addon-copy">The Numbers full-day deluxe rafting trip with Class III & IV rapids.</span>
+          <span class="addon-price">+$204.30 <em>/ person</em></span>
+        </label>
+
+        <label class="addon-card" data-addon-card="train">
+          <input class="trip-addon" id="addonTrain" type="checkbox" data-label="Vista Dome Train" data-cost="139.00">
+          <span class="addon-top">
+            <span class="check-orb" aria-hidden="true"></span>
+            <span class="addon-badge">July 30</span>
+          </span>
+          <span class="addon-title">Vista Dome Train</span>
+          <span class="addon-copy">Royal Gorge Route Vista Dome ride with glass-top views and scenery.</span>
+          <span class="addon-price">+$139.00 <em>/ person</em></span>
+        </label>
+      </div>
+
+      <div class="view-toggle" role="radiogroup" aria-label="Choose how to show the grand total">
+        <div class="view-toggle-label">Show Total As</div>
+        <div class="mode-tabs">
+          <label class="mode-option is-selected">
+            <input type="radio" name="priceView" value="1" checked>
+            <span>Per person</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="priceView" value="2">
+            <span>Couple total</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <aside class="total-panel" aria-live="polite">
+      <div class="summary-top">
+        <div>
+          <div class="summary-kicker">Live Estimate</div>
+          <h3 class="summary-title">Your Grand Total</h3>
+        </div>
+        <span class="summary-badge" id="costModeBadge">Per Person</span>
+      </div>
+
+      <div class="summary-price" id="grandTotal">$644.01</div>
+      <div class="summary-label" id="selectedAdventureLabel">Base resort/hot springs + car + flights</div>
+
+      <ul class="summary-list">
+        <li><span>Cabin / Resort Stay + Hot Springs</span><strong id="resortLineAmount">$350.00</strong></li>
+        <li><span>Shared Rental Car</span><strong id="carLineAmount">$70.01</strong></li>
+        <li><span>Estimated Airfare</span><strong id="airfareLineAmount">$224.00</strong></li>
+        <li id="raftingLine" class="is-hidden"><span>Whitewater Rafting</span><strong id="raftingLineAmount">$204.30</strong></li>
+        <li id="trainLine" class="is-hidden"><span>Vista Dome Train</span><strong id="trainLineAmount">$139.00</strong></li>
+      </ul>
+
+      <div class="summary-equation" id="costEquation">$644.01 per person × 1 traveler</div>
+      <p class="cost-note"><strong>Note:</strong> Couple total multiplies the selected per-person estimate by 2 so pairs can quickly see their shared cost. Airfare is estimated from the listed current basic fares and may change.</p>
+    </aside>
+  </div>
+</section>
+
+<div class="rsvp-section">
+  <div class="section-label" style="text-align: center; margin-bottom: 0.7rem;">You In?</div>
+  <h2 class="section-title" style="color: var(--white); text-align: center; font-size: clamp(2rem, 5vw, 3.2rem);">Let Nathan Know You're Coming</h2>
+  <div class="divider" style="margin: 1.2rem auto 1.5rem;"></div>
+  <p>Drop a text, reply to the group chat, or just show up. Either way — block the dates and let's make it happen.</p>
+  <a href="#" class="rsvp-btn">I'm In!</a>
+</div>
+
+<footer>Made with ❤️ for Nathan's Birthday · Colorado Adventure</footer>
+
+<div class="modal-overlay" id="springsModal" onclick="closeModal(event, 'springsModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null, 'springsModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Hot Springs & Retreat</h2>
+      <div class="modal-price">$350.00 <span>Per Person Resort Split</span></div>
+      <div class="modal-price-note">Included in the base trip estimate</div>
+    </div>
+    <div class="modal-body-text"><p>Escape to Mount Princeton Resort. Our cabin features a full kitchen and includes full access to geothermal pools.</p></div>
+    <div class="modal-cost-callout">
+      <span>Cabin / Resort Stay</span>
+      <strong>$350.00/person</strong>
+    </div>
+    <div class="modal-gallery">
+      <img src="springsCabin.jpg" alt="Resort">
+      <img src="springsCreek.jpg" alt="Creekside">
+      <img src="springsSlide.jpg" alt="Slide">
+    </div>
+    <ul class="modal-features">
+      <li>Estimated cabin/resort split: $350.00 per person</li>
+      <li>Hot springs access is included with the stay</li>
+      <li>Fully equipped kitchen</li>
+      <li>Complimentary bike, ski & snowshoe rentals</li>
+      <li>Exclusive Spa & Club access (16+)
+    </ul>
+    <div class="modal-footer action-stack">
+      <a class="external-cta" href="https://mtprinceton.com/" target="_blank" rel="noopener noreferrer">Explore Mount Princeton Resort →</a>
+      <a class="external-cta alt" href="#tripOptions" onclick="closeModal(null, 'springsModal')">See in Trip Estimate →</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="trainModal" onclick="closeModal(event, 'trainModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null, 'trainModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Vista Dome Train</h2>
+      <div class="modal-price">$139.00 <span>Per Rider</span></div>
+    </div>
+    <div class="modal-gallery">
+      <img src="trainVista.jpg" alt="Vista Dome">
+      <img src="trainMen.jpg" alt="Dining">
+      <img src="trainOpen.jpg" alt="Open Car">
+    </div>
+    <ul class="modal-features">
+      <li>Ride through Royal Gorge</li>
+      <li>Fresh grill menu prepared onboard</li>
+      <li>Spectacular open-air views</li>
+    </ul>
+    <div class="modal-footer">
+      <a class="external-cta" href="https://royalgorgeroute.com/ride/" target="_blank" rel="noopener noreferrer">Book / Explore Royal Gorge Route →</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="raftModal" onclick="closeModal(event, 'raftModal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal(null, 'raftModal')">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">The Numbers Full Day</h2>
+      <div class="modal-price">$204.30 <span>Per Paddler</span></div>
+    </div>
+    <div class="modal-gallery">
+      <img src="waterBoat.jpg" alt="Boat">
+      <img src="waterCouple.jpg" alt="Couple" style="object-position: 50% 30%;">
+      <img src="waterGroup.jpg" alt="Group">
+    </div>
+    <ul class="modal-features">
+      <li>Includes Class III & IV rapids</li>
+      <li>Riverside BBQ lunch provided</li>
+      <li>Free Wetsuit/Splash jacket package</li>
+    </ul>
+    <div class="modal-footer">
+      <a class="external-cta" href="https://www.americanadventure.com/tour/the-numbers-deluxe-tour/" target="_blank" rel="noopener noreferrer">Book The Numbers Deluxe Tour →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.5 + 0.8;
+    star.style.cssText = `left: ${Math.random() * 100}%; top: ${Math.random() * 70}%; width: ${size}px; height: ${size}px; --dur: ${(Math.random() * 3 + 2).toFixed(1)}s; animation-delay: ${(Math.random() * 4).toFixed(1)}s;`;
+    starsContainer.appendChild(star);
+  }
+  function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+  function closeModal(e, id) { if (!e || e.target.classList.contains('modal-overlay') || e.target.classList.contains('modal-close')) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; } }
+
+  const tripBaseCosts = {
+    resort: 350.00,
+    car: 70.01,
+    airfare: 224.00,
+    rafting: 204.30,
+    train: 139.00
+  };
+
+  function formatCurrency(value) {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+  }
+
+  function updateTripEstimate() {
+    const addonInputs = Array.from(document.querySelectorAll('.trip-addon'));
+    const selectedAddons = addonInputs.filter(input => input.checked);
+    const selectedAddonKeys = selectedAddons.map(input => input.id === 'addonRafting' ? 'rafting' : 'train');
+    const travelerMultiplier = Number(document.querySelector('input[name="priceView"]:checked')?.value || 1);
+    const perPersonTotal = tripBaseCosts.resort + tripBaseCosts.car + tripBaseCosts.airfare + selectedAddonKeys.reduce((sum, key) => sum + tripBaseCosts[key], 0);
+    const grandTotal = perPersonTotal * travelerMultiplier;
+
+    document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
+    document.getElementById('costModeBadge').textContent = travelerMultiplier === 2 ? 'Couple Total' : 'Per Person';
+    document.getElementById('resortLineAmount').textContent = formatCurrency(tripBaseCosts.resort * travelerMultiplier);
+    document.getElementById('carLineAmount').textContent = formatCurrency(tripBaseCosts.car * travelerMultiplier);
+    document.getElementById('airfareLineAmount').textContent = formatCurrency(tripBaseCosts.airfare * travelerMultiplier);
+    document.getElementById('raftingLineAmount').textContent = formatCurrency(tripBaseCosts.rafting * travelerMultiplier);
+    document.getElementById('trainLineAmount').textContent = formatCurrency(tripBaseCosts.train * travelerMultiplier);
+
+    document.getElementById('raftingLine').classList.toggle('is-hidden', !selectedAddonKeys.includes('rafting'));
+    document.getElementById('trainLine').classList.toggle('is-hidden', !selectedAddonKeys.includes('train'));
+
+    document.querySelectorAll('.addon-card').forEach(card => {
+      const input = card.querySelector('input[type="checkbox"]');
+      card.classList.toggle('is-selected', input.checked);
+    });
+
+    document.querySelectorAll('.mode-option').forEach(option => {
+      option.classList.toggle('is-selected', option.querySelector('input[type="radio"]').checked);
+    });
+
+    let label = 'Base resort/hot springs + car + flights';
+    if (selectedAddonKeys.includes('rafting') && selectedAddonKeys.includes('train')) label = 'The whole shebang';
+    else if (selectedAddonKeys.includes('rafting')) label = 'Base + whitewater rafting';
+    else if (selectedAddonKeys.includes('train')) label = 'Base + Vista Dome train';
+    document.getElementById('selectedAdventureLabel').textContent = label;
+
+    const travelerText = travelerMultiplier === 2 ? '2 travelers' : '1 traveler';
+    document.getElementById('costEquation').textContent = `${formatCurrency(perPersonTotal)} per person × ${travelerText}`;
+  }
+
+  document.querySelectorAll('.trip-addon, input[name="priceView"]').forEach(input => {
+    input.addEventListener('change', updateTripEstimate);
+  });
+  updateTripEstimate();
+</script>
+</body>
+</html>
