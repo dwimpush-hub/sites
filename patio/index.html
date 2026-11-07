@@ -334,7 +334,7 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
   // Drive photo links: the sheet keeps https://drive.google.com/file/d/ID/view, thumbnails come from Drive's thumbnailer
   const driveId=u=>{const m=String(u||'').match(/\/d\/([\w-]+)/);return m?m[1]:'';};
   const thumbUrl=(u,w)=>'https://drive.google.com/thumbnail?id='+driveId(u)+'&sz=w'+w;
-  const photoHtml=x=>x.photo&&driveId(x.photo)?`<a class="idea-photo" href="${esc(x.photo)}" data-lb target="_blank" rel="noopener"><img src="${thumbUrl(x.photo,400)}" alt="Photo attached to this idea" loading="lazy" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/${driveId(x.photo)}=w400'"></a>`:'';
+  const photoHtml=x=>x.photo&&driveId(x.photo)?`<a class="idea-photo" href="${esc(x.photo)}" data-lb target="_blank" rel="noopener"><img src="${thumbUrl(x.photo,400)}" alt="Photo attached to this idea" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/${driveId(x.photo)}=w400'"></a>`:'';
   // pick a photo: shrink it in the browser to 1600 px on the long edge so posts stay small
   function shrink(file){
     return new Promise((res,rej)=>{
@@ -371,7 +371,7 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
   }
   // lightbox
   const lb=document.createElement('div'); lb.id='lightbox'; lb.setAttribute('role','dialog'); lb.setAttribute('aria-label','Photo');
-  lb.innerHTML='<button type="button" class="lb-close" aria-label="Close">&times;</button><img alt="Attached photo, full size"><div class="lb-bar"><span class="lb-who"></span><a target="_blank" rel="noopener">Open in Drive</a></div>';
+  lb.innerHTML='<button type="button" class="lb-close" aria-label="Close">&times;</button><img alt="Attached photo, full size" referrerpolicy="no-referrer"><div class="lb-bar"><span class="lb-who"></span><a target="_blank" rel="noopener">Open in Drive</a></div>';
   document.body.appendChild(lb);
   const lbClose=()=>{lb.classList.remove('on'); lb.querySelector('img').src='';};
   lb.addEventListener('click',e=>{if(e.target===lb||e.target.classList.contains('lb-close'))lbClose();});
