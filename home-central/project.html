@@ -236,8 +236,12 @@
       '<ul class="ideas" data-list>'+mine.map(ideaLi).join('')+'</ul>'+
       '<form class="ideas-form" data-form autocomplete="off" style="margin:10px 0 0"><textarea rows="2" placeholder="Add an idea for this spot. Enter posts it, Shift+Enter makes a new line." aria-label="Idea for this station" maxlength="2000"></textarea><div class="row"><button type="button" class="btn ghost sm" data-mark>Mark up this view</button>'+HC.pickerHtml('Add a photo')+'<span class="grow"></span><button type="submit" class="btn sm">Post</button><div class="status muted" aria-live="polite"></div></div></form></div></article>';
   }
-  function renderPhotos(){
+  let lastWalk='';
+  function renderPhotos(force){
     const host=$('#stations'); if(host.querySelector('.idea-edit'))return;
+    if(!force&&[...host.querySelectorAll('[data-form] textarea')].some(t=>t.value.trim()))return; // someone is typing an idea
+    const key=JSON.stringify([photos,ideas.map(x=>[x.id,x.station,x.text,x.photo,x.updated]),P.cover]); if(!force&&key===lastWalk)return; lastWalk=key;
+    const keep={}; host.querySelectorAll('.station').forEach(a=>{const r=a.querySelector('input[type=range]'), m=a.querySelector('[data-mk]'); keep[a.dataset.id]={v:r?+r.value:50, mk:!!(m&&m.checked)};});
     const sts=stations();
     $('#photo-cnt').textContent=sts.length?sts.length+(sts.length===1?' station':' stations')+(sts.filter(renderOf).length?', '+sts.filter(renderOf).length+' with a rendering':''):'';
     host.innerHTML=sts.length?sts.map((st,i)=>stationHtml(st,i,sts.length)).join(''):'<div class="empty">No stations yet. Add the first photo above: a view of the spot as it is today.</div>';
@@ -253,42 +257,44 @@
         stage.addEventListener('pointermove',e=>{if(drag)from(e);});
         stage.addEventListener('pointerup',()=>drag=false); stage.addEventListener('pointercancel',()=>drag=false);
       }
-      art.querySelector('[data-mk]').addEventListener('change',e=>{stage.classList.toggle('show-mk',e.target.checked); const t=stage.querySelector('.tag.l'); if(t)t.textContent=e.target.checked?'My markup':'Today';});
+      const mkBox=art.querySelector('[data-mk]'), showMk=on=>{stage.classList.toggle('show-mk',on); const t=stage.querySelector('.tag.l'); if(t)t.textContent=on?'My markup':'Today';};
+      mkBox.addEventListener('change',e=>showMk(e.target.checked));
+      const was=keep[st.id]; if(was){ if(rng&&was.v!==50){rng.value=was.v; rng.dispatchEvent(new Event('input'));} if(was.mk&&!mkBox.disabled){mkBox.checked=true; showMk(true);} }
       const form=art.querySelector('[data-form]'), ta=form.querySelector('textarea'), fst=form.querySelector('.status');
       const picker=HC.wirePicker(form.querySelector('.photo-pick'),m=>HC.flash(fst,m,true));
       ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
       form.addEventListener('submit',async e=>{
         e.preventDefault(); const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo){HC.flash(fst,'Type an idea or attach a photo first.');return;}
         form.querySelector('button[type=submit]').disabled=true; HC.flash(fst,'Posting...');
-        try{const d=await HC.api.post({action:'idea.add',project:id,station:st.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined}); ideas.push(d.idea); renderPhotos(); renderIdeas(true); art.scrollIntoView({block:'nearest'});}
+        try{const d=await HC.api.post({action:'idea.add',project:id,station:st.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined}); ideas.push(d.idea); renderPhotos(true); renderIdeas(true); art.scrollIntoView({block:'nearest'});}
         catch(err){HC.flash(fst,err.message,true); form.querySelector('button[type=submit]').disabled=false;}
       });
       art.querySelector('[data-mark]').addEventListener('click',()=>{
         const r=renderOf(st), c=parseCap(st,stations().indexOf(st));
         HC.openMarkup({name:st.name,title:c.title,bases:r?[{label:'Concept',url:r.url},{label:'Today',url:st.url}]:[{label:'Today',url:st.url}],onPost:async res=>{
-          const d=await HC.api.post({action:'photo.add',project:id,photo:res.photo,caption:res.text,kind:'markup',parent:st.id}); photos.push(d.photo); renderPhotos();
+          const d=await HC.api.post({action:'photo.add',project:id,photo:res.photo,caption:res.text,kind:'markup',parent:st.id}); photos.push(d.photo); renderPhotos(true);
           const el=document.getElementById('st-'+st.id); if(el)el.scrollIntoView({block:'nearest'});
         }});
       });
       art.querySelector('[data-render]').addEventListener('change',async e=>{
         const f=e.target.files&&e.target.files[0]; if(!f)return; e.target.value='';
         HC.flash(pst,'Uploading the rendering...');
-        try{const ph=await HC.shrink(f); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data},kind:'render',parent:st.id}); photos=photos.filter(x=>!(x.kind==='render'&&x.parent===st.id)); photos.push(d.photo); renderPhotos(); HC.flash(pst,'Rendering attached.'); setTimeout(()=>HC.flash(pst,''),3000);}
+        try{const ph=await HC.shrink(f); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data},kind:'render',parent:st.id}); photos=photos.filter(x=>!(x.kind==='render'&&x.parent===st.id)); photos.push(d.photo); renderPhotos(true); HC.flash(pst,'Rendering attached.'); setTimeout(()=>HC.flash(pst,''),3000);}
         catch(err){HC.flash(pst,'Could not attach the rendering: '+err.message,true);}
       });
       const lab=art.querySelector('label.lnk'); lab.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lab.querySelector('input').click();}});
       const rm=art.querySelector('[data-rmrender]'); if(rm)rm.addEventListener('click',async()=>{
         const r=renderOf(st); if(!r||!HC.confirmDel('Remove the rendering from this station? The file goes to the Drive trash.'))return;
-        try{await HC.api.post({action:'photo.delete',id:r.id}); photos=photos.filter(x=>x.id!==r.id); renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
+        try{await HC.api.post({action:'photo.delete',id:r.id}); photos=photos.filter(x=>x.id!==r.id); renderPhotos(true);}catch(err){HC.flash(pst,err.message,true);}
       });
-      const cv=art.querySelector('[data-cover]'); if(cv)cv.addEventListener('click',async()=>{try{const d=await HC.api.post({action:'photo.cover',id:st.id}); P.cover=d.cover; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}});
+      const cv=art.querySelector('[data-cover]'); if(cv)cv.addEventListener('click',async()=>{try{const d=await HC.api.post({action:'photo.cover',id:st.id}); P.cover=d.cover; renderPhotos(true);}catch(err){HC.flash(pst,err.message,true);}});
       art.querySelector('[data-text]').addEventListener('click',()=>{
         const c=parseCap(st,stations().indexOf(st));
         HC.modal({title:'Station text',body:
           '<div class="two"><label class="f"><b>Title</b><input type="text" name="title" maxlength="120" value="'+esc(c.title)+'" placeholder="Off the concrete pad"></label><label class="f"><b>Seen from</b><input type="text" name="where" maxlength="120" value="'+esc(c.where)+'" placeholder="from the covered patio, at the house wall"></label></div>'+
           '<label class="f"><b>What changes here</b><textarea name="text" rows="5" maxlength="1500">'+esc(c.text)+'</textarea></label>'+
           '<label class="f"><b>Liberty taken</b><textarea name="liberty" rows="3" maxlength="800" placeholder="A judgement call the rendering makes, so it can be argued with.">'+esc(c.liberty)+'</textarea></label>',
-          onSubmit:async f=>{const d=await HC.api.post({action:'photo.edit',id:st.id,caption:joinCap({title:f.title.value,where:f.where.value,text:f.text.value,liberty:f.liberty.value})}); Object.assign(st,d.photo); renderPhotos();}});
+          onSubmit:async f=>{const d=await HC.api.post({action:'photo.edit',id:st.id,caption:joinCap({title:f.title.value,where:f.where.value,text:f.text.value,liberty:f.liberty.value})}); Object.assign(st,d.photo); renderPhotos(true);}});
       });
       const move=async dir=>{
         const sts=stations(), i=sts.indexOf(st), j=i+dir; if(j<0||j>=sts.length)return;
@@ -296,18 +302,18 @@
         try{
           const nums=sts.map((x,k)=>k+1); const tmp=nums[i]; nums[i]=nums[j]; nums[j]=tmp;
           for(let k=0;k<sts.length;k++){ if(+sts[k].order!==nums[k]){ const d=await HC.api.post({action:'photo.edit',id:sts[k].id,order:nums[k]}); Object.assign(sts[k],d.photo); } }
-          renderPhotos(); HC.flash(pst,''); const el=document.getElementById('st-'+st.id); if(el)el.scrollIntoView({block:'nearest'});
+          renderPhotos(true); HC.flash(pst,''); const el=document.getElementById('st-'+st.id); if(el)el.scrollIntoView({block:'nearest'});
         }catch(err){HC.flash(pst,err.message,true);}
       };
       const up=art.querySelector('[data-up]'); if(up)up.addEventListener('click',()=>move(-1));
       const dn=art.querySelector('[data-down]'); if(dn)dn.addEventListener('click',()=>move(1));
       art.querySelector('[data-del]').addEventListener('click',async()=>{
         if(!HC.confirmDel('Remove this station? The photo, its rendering and its mark-ups go to the Drive trash. Ideas posted under it are kept with the general ideas.'))return;
-        try{const d=await HC.api.post({action:'photo.delete',id:st.id}); photos=photos.filter(x=>x.id!==st.id&&x.parent!==st.id); P.cover=d.cover||''; ideas.forEach(x=>{if(x.station===st.id)x.station='';}); renderPhotos(); renderIdeas(true);}catch(err){HC.flash(pst,err.message,true);}
+        try{const d=await HC.api.post({action:'photo.delete',id:st.id}); photos=photos.filter(x=>x.id!==st.id&&x.parent!==st.id); P.cover=d.cover||''; ideas.forEach(x=>{if(x.station===st.id)x.station='';}); renderPhotos(true); renderIdeas(true);}catch(err){HC.flash(pst,err.message,true);}
       });
       art.querySelectorAll('[data-rmmark]').forEach(b=>b.addEventListener('click',async()=>{
         if(!HC.confirmDel('Delete this mark-up?'))return;
-        try{await HC.api.post({action:'photo.delete',id:b.dataset.rmmark}); photos=photos.filter(x=>x.id!==b.dataset.rmmark); renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
+        try{await HC.api.post({action:'photo.delete',id:b.dataset.rmmark}); photos=photos.filter(x=>x.id!==b.dataset.rmmark); renderPhotos(true);}catch(err){HC.flash(pst,err.message,true);}
       }));
     });
   }
@@ -317,7 +323,7 @@
     let next=stations().reduce((m,x)=>Math.max(m,ordOf(x)===1e9?0:ordOf(x)),0);
     for(let i=0;i<fs.length;i++){
       HC.flash(pst,'Uploading '+(i+1)+' of '+fs.length+': '+fs[i].name+'...');
-      try{const ph=await HC.shrink(fs[i]); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data},order:++next}); photos.push(d.photo); if(d.cover)P.cover=d.cover; renderPhotos();}
+      try{const ph=await HC.shrink(fs[i]); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data},order:++next}); photos.push(d.photo); if(d.cover)P.cover=d.cover; renderPhotos(true);}
       catch(err){HC.flash(pst,'Could not upload '+fs[i].name+': '+err.message,true);return;}
     }
     HC.flash(pst,fs.length+(fs.length===1?' station added.':' stations added.')); setTimeout(()=>HC.flash(pst,''),3000);
@@ -356,7 +362,7 @@
     const rm=li.querySelector('[data-rmphoto]'); if(rm)rm.addEventListener('click',()=>{removePhoto=true;li.querySelector('.photo-cur').remove();});
     const picker=HC.wirePicker(li.querySelector('.photo-pick'),m=>HC.flash(st,m,true));
     ta.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();li.querySelector('[data-save]').click();}});
-    const both=()=>{renderIdeas(true);renderPhotos();}; li.querySelector('[data-cancel]').addEventListener('click',both);
+    const both=()=>{renderIdeas(true);renderPhotos(true);}; li.querySelector('[data-cancel]').addEventListener('click',both);
     li.querySelector('[data-save]').addEventListener('click',async()=>{
       const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo&&(removePhoto||!x.photo)){HC.flash(st,'Empty. Use Delete to remove it.');return;}
       li.querySelectorAll('button').forEach(b=>b.disabled=true); HC.flash(st,'Saving...');
@@ -422,7 +428,7 @@
     try{
       const d=await HC.api.get({action:'project',id});
       P=d.project; tasks=d.tasks; photos=d.photos; ideas=d.ideas; files=d.files;
-      renderHead(); renderNotes(); renderTasks(); renderPhotos(); renderIdeas(); renderFiles(); if(!quiet)HC.flash(hst,'');
+      renderHead(); renderNotes(); renderTasks(); renderPhotos(!quiet); renderIdeas(); renderFiles(); if(!quiet)HC.flash(hst,'');
       if(HC.C.DRIVE_URL){const a=$('#folder-link'); a.href=HC.C.DRIVE_URL; a.style.display='';}
     }catch(err){ if(!P){$('#name').textContent='Could not open this project'; $('#summary').innerHTML=esc(err.message)+'. <a href="index.html">Back to all projects</a>';} else HC.flash(hst,'Refresh failed: '+err.message,true); }
   }
