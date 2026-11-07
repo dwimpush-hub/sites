@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Patio and side yard concept: before/after renders from site photos, with an ideas board.">
+<meta name="color-scheme" content="light dark">
+<title>Patio and Side Yard Concept</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a concept sheet. Title block, materials, then the walk, station by station, then the details. */
+:root{
+  --paper:#ECE8DF; --paper-2:#E2DCCF; --ink:#2A2824; --ink-2:#5E5950; --line:#B9B2A3;
+  --rust:#9A4E2A; --card:#F5F2EA;
+  --display:"Archivo Narrow","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#1E1C19; --paper-2:#26231F; --ink:#E9E3D6; --ink-2:#B4AC9D; --line:#4A453D;
+  --rust:#D07A4E; --card:#2A2723; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --paper:#1E1C19; --paper-2:#26231F; --ink:#E9E3D6; --ink-2:#B4AC9D; --line:#4A453D;
+  --rust:#D07A4E; --card:#2A2723; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.05;margin:0}
+h1{font-size:clamp(34px,6vw,60px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.4vw,34px);font-weight:600;margin-bottom:10px}
+h3{font-size:21px;font-weight:600}
+p{margin:0 0 12px;max-width:66ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.muted{color:var(--ink-2)}
+section{padding-block:40px;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+
+/* title block */
+.title{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;padding-block:40px 28px}
+.title .meta{font-family:var(--mono);font-size:12.5px;line-height:1.8;color:var(--ink-2);text-align:right;border-left:1px solid var(--line);padding-left:18px}
+.title .meta b{color:var(--ink);font-weight:500}
+.lede{font-size:18px;max-width:60ch}
+@media (max-width:640px){.title{grid-template-columns:1fr}.title .meta{text-align:left;border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:10px}}
+
+/* materials */
+.materials{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.mat{background:var(--card);border:1px solid var(--line)}
+.mat img{display:block;width:100%;aspect-ratio:17/10;object-fit:cover}
+.mat .k{padding:12px 14px 14px}
+.mat .k b{font-family:var(--display);font-size:19px;font-weight:600;display:block;margin-bottom:4px}
+.mat .k span{display:block;font-size:14px;color:var(--ink-2)}
+
+/* stations */
+.station{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;padding-block:28px;border-top:1px dashed var(--line);scroll-margin-top:16px}
+.station:first-of-type{border-top:0}
+@media (max-width:860px){.station{grid-template-columns:1fr}}
+.station .txt{min-width:0}
+.station .txt h3{margin:4px 0 10px}
+.station .txt p{font-size:15px}
+.station .liberty{border-left:3px solid var(--rust);padding:6px 12px;background:var(--card);font-size:14px;margin-top:10px}
+.station .liberty b{color:var(--rust)}
+.cmp{margin:0;min-width:0}
+.cmp-stage{position:relative;width:100%;max-width:100%;overflow:hidden;background:var(--paper-2);border:1px solid var(--line);user-select:none;touch-action:pan-y}
+.cmp-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.cmp-stage .before-wrap{position:absolute;inset:0}
+.cmp-stage .before-wrap img{display:block}
+.cmp-stage .before-wrap img.mk{display:none}
+.cmp-stage.show-mk .before-wrap img.bf{display:none}
+.cmp-stage.show-mk .before-wrap img.mk{display:block}
+.handle{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.35);transform:translateX(-1px);pointer-events:none}
+.handle::after{content:"\25C2 \25B8";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#222;font-size:12px;padding:5px 7px;border-radius:14px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.35);font-family:Arial,sans-serif}
+.tag{position:absolute;top:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(20,18,15,.72);color:#fff;padding:3px 7px;pointer-events:none}
+.tag.l{left:8px}.tag.r{right:8px}
+.overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none}
+.cmp-stage.show-drain .overlay{display:block}
+.cmp-bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 0 0;font-size:14px}
+.cmp-bar input[type=range]{flex:1 1 180px;min-width:120px;accent-color:var(--rust)}
+.cmp-bar label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+
+/* details */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.cols > div{min-width:0}
+.cols ul{padding-left:18px;margin:0}
+.cols li{margin-bottom:8px;font-size:15px}
+.spec{width:100%;border-collapse:collapse;font-size:14px}
+.spec th,.spec td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.spec th{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.tbl-wrap{overflow-x:auto}
+.seq{counter-reset:s;padding-left:0;list-style:none;margin:0}
+.seq li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:10px;margin-bottom:10px;font-size:15px}
+.seq li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);color:var(--rust);font-size:14px;padding-top:2px}
+.foot{font-size:13px;color:var(--ink-2);padding-top:20px;border-top:1px solid var(--line)}
+/* ideas board, one per station */
+.ideas{grid-column:1/-1;border:1px solid var(--line);background:var(--card);padding:14px 16px 16px;margin-top:4px}
+.ideas-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.ideas-head .eyebrow{font-size:12px}
+.ideas-list{list-style:none;margin:0 0 12px;padding:0}
+.ideas-list li{border-top:1px solid var(--line);padding:10px 0}
+.ideas-list li:first-child{border-top:0;padding-top:2px}
+.idea-meta{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-bottom:3px}
+.idea-meta b{color:var(--ink);font-weight:500}
+.idea-text{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;max-width:none}
+.idea-actions{margin-top:4px;display:flex;gap:14px}
+.lnk{background:none;border:0;padding:0;color:var(--rust);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.ideas-empty{font-size:14px;color:var(--ink-2);padding:2px 0 8px}
+.ideas-form{display:grid;gap:8px}
+.ideas-form textarea,.ideas-form input[type=text],.idea-edit textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:9px 11px;border-radius:3px;resize:vertical;min-height:44px}
+.ideas-form textarea:focus,.ideas-form input:focus,.idea-edit textarea:focus{outline:2px solid var(--rust);outline-offset:1px}
+.ideas-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ideas-row .who{flex:1 1 160px;min-width:120px}
+.btn{font:inherit;font-size:15px;font-weight:600;font-family:var(--display);letter-spacing:.02em;background:var(--rust);color:#fff;border:0;padding:10px 18px;border-radius:3px;cursor:pointer;min-height:44px}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.ideas-status{font-size:13px;flex-basis:100%}
+.ideas-status.err{color:#B3261E}
+.idea-edit{display:grid;gap:8px;margin-top:4px}
+.idea-edit .ideas-row{justify-content:flex-start}
+@media (max-width:640px){.ideas{padding:12px 12px 14px}.station{padding-block:22px}.cmp-bar{font-size:15px}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="title">
+  <div>
+    <div class="eyebrow">Concept sheet &middot; from site photos and markups</div>
+    <h1>Patio and Side Yard</h1>
+    <p class="lede">Crushed granite in place of the flagstone patio, the old flagstone reset as stepping stones down the side path to the gate, river rock under the AC and at the drain outlet, mulch in the beds, and a French drain from the pool equipment (0) to the shed corner (1).</p>
+  </div>
+  <div class="meta">
+    <b>Site photos</b> 7 Nov 2026<br>
+    <b>Views</b> 9 stations, walked from the house to the gate<br>
+    <b>Status</b> concept, nothing measured
+  </div>
+</header>
+
+<section id="materials">
+  <div class="eyebrow">Materials</div>
+  <h2>Four materials</h2>
+  <p>The swatches are cropped from the renders below, so what you see in the stations is what you see here.</p>
+  <div class="materials">
+    <div class="mat"><img src="Renders/swatch_dg.jpg" alt="Crushed granite texture"><div class="k"><b>Crushed granite</b><span>Texas decomposed granite, quarter-inch minus, compacted in two wetted lifts. The whole patio, plus the joints of the side path.</span></div></div>
+    <div class="mat"><img src="Renders/swatch_stepper.jpg" alt="Flagstone stepping stones in crushed granite"><div class="k"><b>Granite with flagstone steppers</b><span>The biggest flagstones from the patio, reset flush on the granite base down the centre of the path with a 2 to 3 in granite joint, from the patio corner to the gate.</span></div></div>
+    <div class="mat"><img src="Renders/swatch_river.jpg" alt="River rock texture"><div class="k"><b>River rock</b><span>1 to 3 in mixed tan and grey river rock over fabric. Three places: the pad under the AC, the pocket where the drain daylights, and a small pocket at the foot of the rubble by the shed.</span></div></div>
+    <div class="mat"><img src="Renders/swatch_mulch.jpg" alt="Hardwood mulch texture"><div class="k"><b>Hardwood mulch</b><span>Shredded hardwood, kept a few inches off the siding. The equipment bed, the rain-barrel bed, and the bed by the fence past the shed.</span></div></div>
+  </div>
+</section>
+
+<section id="walk">
+  <div class="eyebrow">The walk</div>
+  <h2>Nine stations, house to gate</h2>
+  <p>Drag the handle to compare. Tick &ldquo;my markup&rdquo; to see your scribble in the left half instead of the original photo. Things sitting on a zone in the photo (the hose reel, hoses, pots) are painted over by the new surface; everything else is untouched. Each station has an ideas box underneath it: what you post lands in the shared sheet, and anyone with the link can read and edit the ideas.</p>
+  <div id="stations"></div>
+</section>
+
+<section id="details">
+  <div class="eyebrow">Details</div>
+  <h2>Borders, drain, and the build</h2>
+  <div class="cols">
+    <div>
+      <h3>Edges and borders (the liberties taken)</h3>
+      <ul>
+        <li><b>Steel edging stays and grows.</b> The rusted steel edging already between the beds and the flagstone is the right divider for granite and mulch. Reset it as one clean arc around the rain-barrel bed and extend it around the pool-equipment bed, set a touch proud of the granite.</li>
+        <li><b>A flagstone soldier course along the lantana bed.</b> Mid-size flagstones laid flat and tight, one stone wide, between the granite and the planting. It stops granite migrating into the bed and gives a clean edge to sweep against.</li>
+        <li><b>Boulder border kept.</b> The limestone boulders at the equipment bed stay as that bed&rsquo;s edge, with granite running up to them.</li>
+        <li><b>Concrete is its own border.</b> At the pad and the covered patio the granite butts the slab, just below the slab surface. No edging needed.</li>
+        <li><b>Shed footing as path edge.</b> The cinderblock base is one edge of the path; granite finishes flush with the block face. The outlet pocket (1) sits in the corner between path and shed.</li>
+        <li><b>AC pad.</b> River rock runs out past the condenser on every side and sits below its base. The stepper path runs through the granite past it on the pump side.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>French drain, 0 to 1</h3>
+      <div class="tbl-wrap"><table class="spec">
+        <tr><th>Item</th><th>Spec</th></tr>
+        <tr><td>Inlet (0)</td><td>9 by 9 in catch basin with grate, set flush in the granite next to the pool equipment</td></tr>
+        <tr><td>Pipe</td><td>4-in perforated PVC (SDR 35) or corrugated with sock, holes down</td></tr>
+        <tr><td>Trench</td><td>About 10 in wide, deep enough to fall at least an eighth of an inch per foot from basin to outlet</td></tr>
+        <tr><td>Bedding</td><td>Non-woven fabric wrapped around washed gravel, a few inches below and above the pipe</td></tr>
+        <tr><td>Outlet (1)</td><td>Open end or pop-up emitter under the river-rock pocket at the shed corner</td></tr>
+        <tr><td>Crossing</td><td>Under the path; steppers bridge the trench, nothing sits directly on the pipe</td></tr>
+      </table></div>
+      <h3 style="margin-top:22px">Base and grades</h3>
+      <ul>
+        <li>Patio: strip the flagstone and the old bedding, grade to fall away from the house, compacted road base, then granite in two wetted, plate-compacted lifts.</li>
+        <li>Path: same granite build, steppers bedded on the first lift and tapped flush, joints filled with the second.</li>
+        <li>River rock: over fabric at the AC pad, the outlet pocket and the shed pocket, held a touch below the granite.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cols" style="margin-top:34px">
+    <div>
+      <h3>Build sequence</h3>
+      <ol class="seq" style="margin-top:12px">
+        <li>Lift the flagstone. Sort it: the largest for the path steppers, mid stones for the soldier course, the rest goes.</li>
+        <li>Rough grade. Dig the drain trench from 0 to 1 first, set the basin and pipe, backfill with gravel and fabric.</li>
+        <li>Set steel edging and the soldier course so every granite edge is fixed before any granite goes down.</li>
+        <li>Road base and the first granite lift, compacted. Set steppers on it.</li>
+        <li>Second granite lift, compact, fill stepper joints, broom.</li>
+        <li>Fabric and river rock: AC pad, outlet pocket and shed pocket.</li>
+        <li>Mulch the three beds last so nothing tracks into the granite.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Before ordering</h3>
+      <p class="muted" style="font-size:14px;margin:8px 0 12px">Nothing here is measured. Tape the patio, the path and the three beds, and the quantities follow from those areas: granite at a few inches compacted (order about a quarter more than the compacted volume), river rock and mulch at a few inches loose, pipe at the taped run from 0 to 1 plus a little.</p>
+    </div>
+  </div>
+  <p class="foot" style="margin-top:34px">Renders are photo composites: your scribbles were lifted off the markups, grown out to the edges of the surface they sit on, and refilled with built materials, with the original photo&rsquo;s shadows kept. Stepper faces are sampled from your own flagstone. Treat them as a design conversation, not a contractor drawing. Ideas posted on this page are kept in a <a href="https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5gQ9KWZNy7bZbzg6NKrTbG33RQ/edit">Google Sheet</a> (the owner&rsquo;s; ask for access if you want the raw list).</p>
+</section>
+
+</div>
+
+<script>
+// stations in walking order: photo key, image size, caption; text is HTML
+const STATIONS = [
+ {key:'111436',w:1396,h:1047,title:'Off the concrete pad',where:'from the covered patio, at the house wall',
+  text:'The granite starts where the pad ends and runs up to the slab edge, and it fills the corner on the far side of the pad too, so the hose-bib corner stops being a mud spot.',
+  liberty:'The slab is the border here. No edging, just granite packed hard against the concrete on both sides of it. The cannas in that corner come out.'},
+ {key:'111447',w:1013,h:1351,title:'Rain-barrel bed',where:'along the siding, from the pad',
+  text:'The bed under the meters is mulch, held in one clean arc that leaves the wall at the cannas, swings out past the shrub and curves back to the house. Everything outside the arc, the canna corner at the walk, the ground in front of the barrel blocks and the rubble by the fence, is crushed granite, continuous with the patio.',
+  liberty:'The old steel edging comes out and the arc is a new run of it, so the line between mulch and granite stays sharp.'},
+ {key:'111421',w:1357,h:1019,title:'Patio, toward the pool',where:'over the lantana to the pool',
+  text:'The whole flagstone patio becomes one plane of compacted crushed granite, graded away from the house. Pots and furniture sit on it the same way they do today.',
+  liberty:'A one-stone-wide soldier course of the mid-size flagstone runs along the lantana bed as the patio&rsquo;s edge, flat and tight, so granite stays out of the planting.'},
+ {key:'111412',w:1388,h:1042,title:'Patio, toward the fence',where:'from the concrete walk',
+  text:'Same surface, seen from the walk. The uneven joints and the weeds between stones go away; the granite sheds water toward the drain.',
+  liberty:'The oleander pot and the bucket stay where they are; the granite is laid around them. The small edged bed at the left edge of the frame keeps its mulch.'},
+ {key:'111341',w:1400,h:1058,title:'Patio, toward the shed',where:'from the covered patio',
+  text:'From the covered patio the granite reads as a single warm field all the way to the soil line at the back. The stacked wicker and the shed stay as they are.',
+  liberty:'The loose flagstone and rubble at the far edge of this frame go; granite runs right to the beds.'},
+ {key:'111328',w:1003,h:1337,title:'Path at the shed',where:'from the patio corner',
+  text:'The left side is the side path seen from this end: crushed granite with the steppers set down its centre, running past the shed to the gate. The ground between the path and the fence, where the hoses and conduits lie today, is granite, with a pocket of river rock at the foot of the rubble pile in front of the shed. The bed by the fence with the young tree gets mulch.',
+  liberty:'Granite between the path and the fence, so the corner reads as one surface with the path marked by the stones alone; the river-rock pocket sits where the ground is lowest at the shed corner.'},
+ {key:'111457',w:1400,h:1051,title:'Pool-equipment bed',where:'at the meters and pump',
+  text:'Mulch under the shrub and across to the pump. The limestone boulders stay as the bed&rsquo;s edge; the granite in the foreground is the patio corner. The strip between the pump and the fence, running back toward the AC, is the side path: crushed granite with the flagstone steppers set down it.',
+  liberty:'Granite runs right up under the equipment; backwash and spray drain through it to the catch basin. The path strip is the same walk seen from the gate end, so the steppers line up.'},
+ {key:'111207',w:1021,h:1361,title:'Side path to the gate',where:'from the patio end of the path',
+  text:'Crushed granite the full width, with the biggest flagstones reset as steppers down the centre, 2 to 3 in of granite between them. The catch basin (0) sits in the granite beside the pool equipment. The pocket at bottom right is where the drain daylights (1).',
+  liberty:'The steppers keep to the centre so the granite reads as the walk and the stones as the stride.', drain:[[0.214,0.411],[0.723,0.742]]},
+ {key:'111148',w:1043,h:1391,title:'AC corner at the gate',where:'into the corner by the gate',
+  text:'River rock under and around the condenser, run out past it on every side and sitting below its base. The steppers continue through the granite to the gate.',
+  liberty:'The hose reel moves onto the granite; nothing stores on the rock pad so the unit can be serviced.'}
+];
+
+(function(){
+  const host=document.getElementById('stations');
+  STATIONS.forEach((s,i)=>{
+    const art=document.createElement('article'); art.className='station'; art.id='station-'+(i+1);
+    const drain=s.drain?`<svg class="overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none"><line x1="${s.drain[0][0]*1000}" y1="${s.drain[0][1]*1000}" x2="${s.drain[1][0]*1000}" y2="${s.drain[1][1]*1000}" stroke="#ff3b1f" stroke-width="7" stroke-dasharray="22 14" vector-effect="non-scaling-stroke"/><circle cx="${s.drain[0][0]*1000}" cy="${s.drain[0][1]*1000}" r="22" fill="#ff3b1f"/><circle cx="${s.drain[1][0]*1000}" cy="${s.drain[1][1]*1000}" r="22" fill="#ff3b1f"/></svg>`:'';
+    art.innerHTML=`
+      <figure class="cmp">
+        <div class="cmp-stage" id="stage-${s.key}" style="aspect-ratio:${s.w}/${s.h}">
+          <img src="Renders/${s.key}_after.jpg" alt="Render of station ${i+1}: ${s.title}"${i>0?' loading="lazy" decoding="async"':''}>
+          <div class="before-wrap" style="clip-path:inset(0 50% 0 0)">
+            <img class="bf" src="Renders/${s.key}_before.jpg" alt=""${i>0?' loading="lazy" decoding="async"':''}>
+            <img class="mk" src="Renders/${s.key}_markup.jpg" alt="" loading="lazy">
+          </div>
+          <div class="handle" style="left:50%"></div>
+          <span class="tag l" id="tagl-${s.key}">Today</span><span class="tag r">Concept</span>
+          ${drain}
+        </div>
+        <div class="cmp-bar">
+          <input type="range" id="rng-${s.key}" min="0" max="100" value="50" aria-label="Compare before and after">
+          <label><input type="checkbox" id="mk-${s.key}"> my markup</label>
+          ${s.drain?`<label><input type="checkbox" id="dr-${s.key}"> drain line 0 to 1</label>`:''}
+        </div>
+      </figure>
+      <div class="txt">
+        <div class="eyebrow">Station ${i+1} &middot; ${s.where}</div>
+        <h3>${s.title}</h3>
+        <p>${s.text}</p>
+        <div class="liberty"><b>Liberty taken.</b> ${s.liberty}</div>
+      </div>
+      <div class="ideas" id="ideas-${s.key}">
+        <div class="ideas-head"><span class="eyebrow">Ideas for this spot</span><span class="muted" id="cnt-${s.key}" style="font-size:13px"></span></div>
+        <ul class="ideas-list" id="list-${s.key}"></ul>
+        <form class="ideas-form" id="form-${s.key}" autocomplete="off">
+          <textarea rows="2" placeholder="Add an idea for this spot. Enter posts it, Shift+Enter makes a new line." aria-label="Your idea for ${s.title}"></textarea>
+          <div class="ideas-row">
+            <input class="who" type="text" placeholder="Your name (optional)" maxlength="80" aria-label="Your name">
+            <button class="btn" type="submit">Enter</button>
+            <span class="ideas-status muted" aria-live="polite"></span>
+          </div>
+        </form>
+      </div>`;
+    host.appendChild(art);
+    const stage=art.querySelector('.cmp-stage'), wrap=art.querySelector('.before-wrap'), handle=art.querySelector('.handle'), rng=art.querySelector('input[type=range]');
+    const set=v=>{v=Math.max(0,Math.min(100,v));wrap.style.clipPath=`inset(0 ${100-v}% 0 0)`;handle.style.left=v+'%';rng.value=v;};
+    rng.addEventListener('input',()=>set(+rng.value));
+    let drag=false; const fromEvt=e=>{const r=stage.getBoundingClientRect();set((e.clientX-r.left)/r.width*100);};
+    stage.addEventListener('pointerdown',e=>{drag=true;stage.setPointerCapture(e.pointerId);fromEvt(e);});
+    stage.addEventListener('pointermove',e=>{if(drag)fromEvt(e);});
+    stage.addEventListener('pointerup',()=>drag=false); stage.addEventListener('pointercancel',()=>drag=false);
+    art.querySelector('#mk-'+s.key).addEventListener('change',e=>{stage.classList.toggle('show-mk',e.target.checked);document.getElementById('tagl-'+s.key).textContent=e.target.checked?'My markup':'Today';});
+    const dr=art.querySelector('#dr-'+s.key); if(dr)dr.addEventListener('change',e=>stage.classList.toggle('show-drain',e.target.checked));
+  });
+})();
+
+// ---- ideas board: one shared Google Sheet behind an Apps Script web app (see apps-script/Code.gs)
+const IDEAS_API = '';
+const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5gQ9KWZNy7bZbzg6NKrTbG33RQ/edit';
+(function(){
+  const NAME_KEY='patio-ideas-name';
+  const ideas=[];
+  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const when=iso=>{const d=new Date(iso);if(isNaN(d))return '';return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});};
+  const myName=()=>{try{return localStorage.getItem(NAME_KEY)||''}catch(e){return ''}};
+  const saveName=n=>{try{localStorage.setItem(NAME_KEY,n)}catch(e){}};
+  async function api(body){
+    const opt=body?{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'text/plain;charset=utf-8'}}:{method:'GET'};
+    opt.redirect='follow';
+    const r=await fetch(IDEAS_API,opt);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    if(!d.ok)throw new Error(d.error||'request failed');
+    return d;
+  }
+  function status(key,msg,err){const el=document.querySelector('#form-'+key+' .ideas-status');if(!el)return;el.textContent=msg||'';el.classList.toggle('err',!!err);}
+  function render(key,force){
+    const list=document.getElementById('list-'+key), cnt=document.getElementById('cnt-'+key);
+    if(!list||(!force&&list.querySelector('.idea-edit')))return; // a background refresh never wipes an edit in progress
+    const mine=ideas.filter(x=>x.station===key).sort((a,b)=>new Date(a.created)-new Date(b.created));
+    cnt.textContent=mine.length?mine.length+(mine.length===1?' idea':' ideas'):'';
+    if(!mine.length){list.innerHTML='<li class="ideas-empty">No ideas yet for this spot. Be the first.</li>';return;}
+    list.innerHTML=mine.map(x=>`<li data-id="${esc(x.id)}">
+      <div class="idea-meta"><b>${esc(x.author||'Someone')}</b> &middot; ${when(x.created)}${x.updated&&x.updated!==x.created?' &middot; edited':''}</div>
+      <p class="idea-text">${esc(x.text)}</p>
+      <div class="idea-actions"><button type="button" class="lnk" data-edit>Edit</button></div>
+    </li>`).join('');
+    list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>edit(key,b.closest('li'))));
+  }
+  function renderAll(){STATIONS.forEach(s=>render(s.key));}
+  function edit(key,li){
+    const id=li.dataset.id, x=ideas.find(i=>i.id===id); if(!x)return;
+    li.innerHTML=`<div class="idea-meta"><b>${esc(x.author||'Someone')}</b> &middot; editing</div>
+      <div class="idea-edit"><textarea rows="3" aria-label="Edit idea">${esc(x.text)}</textarea>
+      <div class="ideas-row"><button type="button" class="btn" data-save>Save</button><button type="button" class="btn ghost" data-cancel>Cancel</button><button type="button" class="lnk" data-del>Delete</button><span class="ideas-status muted" aria-live="polite"></span></div></div>`;
+    const ta=li.querySelector('textarea'), st=li.querySelector('.ideas-status'); ta.focus();
+    ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();li.querySelector('[data-save]').click();}});
+    li.querySelector('[data-cancel]').addEventListener('click',()=>render(key,true));
+    li.querySelector('[data-save]').addEventListener('click',async()=>{
+      const text=ta.value.trim(); if(!text){st.textContent='Empty. Use Delete to remove it.';return;}
+      li.querySelectorAll('button').forEach(b=>b.disabled=true); st.textContent='Saving...';
+      try{const d=await api({action:'edit',id,text,author:myName()}); x.text=text; x.updated=d.updated||new Date().toISOString(); render(key,true);}
+      catch(e){st.textContent='Could not save: '+e.message; st.classList.add('err'); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
+    });
+    li.querySelector('[data-del]').addEventListener('click',async()=>{
+      if(!confirm('Delete this idea for everyone?'))return;
+      li.querySelectorAll('button').forEach(b=>b.disabled=true); st.textContent='Deleting...';
+      try{await api({action:'delete',id}); ideas.splice(ideas.indexOf(x),1); render(key,true);}
+      catch(e){st.textContent='Could not delete: '+e.message; st.classList.add('err'); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
+    });
+  }
+  async function load(quiet){
+    if(!IDEAS_API){
+      STATUS_ALL('Ideas board not connected yet: the sheet script has not been deployed. Ideas will work once it is.',false);
+      document.querySelectorAll('.ideas-form button,.ideas-form textarea,.ideas-form input').forEach(el=>el.disabled=true);
+      renderAll(); return;
+    }
+    if(!quiet)STATUS_ALL('Loading ideas...');
+    try{const d=await api(); ideas.length=0; d.ideas.forEach(i=>ideas.push(i)); renderAll(); if(!quiet)STATUS_ALL('');}
+    catch(e){STATUS_ALL('Could not load ideas: '+e.message,true);}
+  }
+  function STATUS_ALL(msg,err){STATIONS.forEach(s=>status(s.key,msg,err));}
+  STATIONS.forEach(s=>{
+    const form=document.getElementById('form-'+s.key); if(!form)return;
+    const ta=form.querySelector('textarea'), who=form.querySelector('.who'), btn=form.querySelector('button');
+    who.value=myName();
+    ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+    form.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const text=ta.value.trim(); if(!text){status(s.key,'Type an idea first.');ta.focus();return;}
+      const author=who.value.trim(); saveName(author);
+      btn.disabled=true; status(s.key,'Posting...');
+      try{const d=await api({action:'add',station:s.key,title:s.title,author,text}); ideas.push(d.idea); ta.value=''; render(s.key,true); status(s.key,'Posted.'); setTimeout(()=>status(s.key,''),2500);}
+      catch(err){status(s.key,'Could not post: '+err.message,true);}
+      btn.disabled=false;
+    });
+  });
+  load();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&IDEAS_API)load(true);});
+  if(IDEAS_API)setInterval(()=>load(true),90000);
+})();
+</script>
+</body>
+</html>
