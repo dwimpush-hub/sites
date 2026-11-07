@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Project - Home Central</title>
+<link rel="icon" href="favicon.jpg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap">
+<header class="topbar">
+  <a class="brand" href="index.html"><img src="logo-320.jpg" alt=""><span><b>Home Central</b><small>Projects around the house</small></span></a>
+  <div class="who"></div>
+</header>
+<div class="banner demo" style="display:none"><b>Demo mode.</b> This data lives in this browser only. Set the web-app URL in config.js to share it through your Google Sheet. <button type="button" class="lnk" data-reset>Reset demo data</button></div>
+
+<div class="title" id="head"><div><div class="eyebrow"><a href="index.html" style="text-decoration:none">&larr; All projects</a></div><h1 id="name">Loading...</h1><p class="lede" id="summary"></p></div><div class="meta" id="meta"></div></div>
+<div id="controls" style="display:none">
+  <div class="row" style="justify-content:space-between">
+    <div class="steps" id="steps" aria-label="Where this project stands"></div>
+    <div class="row"><button type="button" class="btn ghost sm" id="edit">Edit details</button><span class="status muted" id="hst" aria-live="polite" style="flex-basis:auto"></span></div>
+  </div>
+  <div class="meta-grid" id="mg"></div>
+  <div class="timeline" id="tl" style="display:none"></div>
+  <nav class="subnav"><a href="#tasks">Tasks</a><a href="#photos">Photos</a><a href="#ideas">Ideas</a><a href="#files">Files</a></nav>
+</div>
+
+<section id="tasks">
+  <div class="sec-head"><h2>Tasks</h2><span class="cnt" id="task-cnt"></span></div>
+  <div class="prog" id="task-prog" style="margin-bottom:14px;display:none"><i></i></div>
+  <form class="task-form" id="task-form">
+    <input class="grow" type="text" name="text" placeholder="Add a task..." maxlength="500" aria-label="Task" required>
+    <input type="date" name="due" aria-label="Due date" title="Due date">
+    <select name="assignee" aria-label="Who"><option value="">Anyone</option><option>Dave</option><option>Nate</option><option>Cissy</option></select>
+    <button type="submit" class="btn">Add</button>
+    <div class="status muted" aria-live="polite"></div>
+  </form>
+  <ul class="tasks" id="task-list"></ul>
+  <div class="row" style="margin-top:8px"><button type="button" class="lnk" id="task-done-toggle" style="display:none"></button></div>
+  <ul class="tasks" id="task-done" style="display:none"></ul>
+</section>
+
+<section id="photos">
+  <div class="sec-head"><h2>Photos and mark-ups</h2><span class="cnt" id="photo-cnt"></span></div>
+  <div class="drop" id="photo-drop">
+    <label class="btn gold" tabindex="0">Add photos<input type="file" accept="image/*" multiple aria-label="Add photos"></label>
+    <span class="small muted">or drop photos here. Each one is shrunk to 1600 px and saved to the project folder in Drive. Use Mark up on any photo to draw on it and say what each colour means.</span>
+    <div class="status muted" aria-live="polite" id="photo-st"></div>
+  </div>
+  <div class="photos" id="photo-grid"></div>
+</section>
+
+<section id="ideas">
+  <div class="sec-head"><h2>Ideas</h2><span class="cnt" id="idea-cnt"></span></div>
+  <form class="ideas-form" id="idea-form">
+    <textarea rows="2" placeholder="An idea, a question, a link..." maxlength="2000" aria-label="Idea"></textarea>
+    <div class="row"><div class="pick"></div><span class="grow"></span><button type="submit" class="btn">Post</button><div class="status muted" aria-live="polite"></div></div>
+  </form>
+  <ul class="ideas" id="idea-list"></ul>
+</section>
+
+<section id="files">
+  <div class="sec-head"><h2>Files</h2><span class="cnt" id="file-cnt"></span></div>
+  <p class="muted small">Contracts, quotes, schedules, plans, permits, receipts. PDFs or anything else up to 15 MB each, kept in the project's files folder in Drive. Put an amount on quotes and invoices and the totals add up below.</p>
+  <form class="file-form" id="file-form">
+    <label class="btn ghost" tabindex="0" id="file-pick">Choose files<input type="file" multiple aria-label="Choose files" style="position:absolute;width:1px;height:1px;opacity:0"></label>
+    <label class="f"><b>Kind</b><select name="kind"></select></label>
+    <label class="f wide"><b>Note</b><input type="text" name="note" maxlength="1000" placeholder="Who it is from, what it covers"></label>
+    <label class="f"><b>Amount</b><input type="number" name="amount" min="0" step="0.01" placeholder="0"></label>
+    <button type="submit" class="btn">Upload</button>
+    <div class="status muted wide" aria-live="polite"></div>
+  </form>
+  <ul class="files" id="file-list"></ul>
+  <div class="totals" id="totals"></div>
+</section>
+
+<div class="foot"><span>Everything on this page is saved to the shared sheet and the project folder in Drive.</span><span class="links"></span><a id="folder-link" style="display:none" target="_blank" rel="noopener">Project folder</a></div>
+</div>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  if(!HC.requireLogin())return;
+  HC.topbar();
+  const $=s=>document.querySelector(s), esc=HC.esc;
+  const id=new URLSearchParams(location.search).get('id');
+  let P=null, tasks=[], photos=[], ideas=[], files=[];
+  if(!id){$('#name').textContent='No project picked.';$('#summary').innerHTML='<a href="index.html">Back to all projects</a>';return;}
+  const hst=$('#hst');
+  const byDate=(a,b)=>new Date(a.created)-new Date(b.created);
+
+  // ----- header -----
+  function renderHead(){
+    document.title=P.name+' - Home Central';
+    $('#name').textContent=P.name; $('#summary').textContent=P.summary||'';
+    $('#meta').innerHTML=HC.pill(P.status)+'<br>'+(P.created?'added '+esc(HC.day(P.created.slice(0,10))):'')+(P.updated?'<br>updated '+esc(HC.when(P.updated)):'');
+    $('#controls').style.display='';
+    $('#steps').innerHTML=Object.keys(HC.STATUS).map((s,i)=>(i===4?'<span class="gap"></span>':'')+'<button type="button" data-s="'+s+'" class="'+(P.status===s?'on':'')+'" title="'+esc(HC.STATUS[s].hint)+'">'+esc(HC.STATUS[s].label)+'</button>').join('');
+    const mg=[];
+    if(P.budget!==''&&P.budget!=null)mg.push(['Budget',HC.money(P.budget)]);
+    if(P.start)mg.push(['Start',HC.day(P.start)]);
+    if(P.target)mg.push(['Target finish',HC.day(P.target)]);
+    if(P.tags)mg.push(['Tags',P.tags]);
+    if(P.page)mg.push(['Concept page','<a href="'+esc(P.page)+'" target="_blank" rel="noopener">'+esc(P.page.replace(/^https?:\/\//,'').replace(/\/$/,''))+'</a>']);
+    $('#mg').innerHTML=mg.map(([k,v])=>'<div><span class="k">'+k+'</span>'+(k==='Concept page'?v:esc(v))+'</div>').join('');
+    const tl=$('#tl');
+    if(P.start&&P.target&&P.target>P.start){
+      const s=new Date(P.start),e=new Date(P.target),n=new Date(HC.today()); const pct=Math.max(0,Math.min(100,100*(n-s)/(e-s)));
+      tl.style.display=''; tl.innerHTML='<div class="bar"><i style="width:'+(P.status==='done'?100:pct)+'%"></i>'+(pct>0&&pct<100?'<b style="left:'+pct+'%" title="today"></b>':'')+'</div><div class="ends"><span>'+esc(HC.day(P.start))+'</span><span>'+(pct>=100&&P.status!=='done'?'past the target':Math.round(pct)+'% of the way')+'</span><span>'+esc(HC.day(P.target))+'</span></div>';
+    }else tl.style.display='none';
+  }
+  $('#steps').addEventListener('click',async e=>{
+    const b=e.target.closest('[data-s]'); if(!b||b.dataset.s===P.status)return;
+    if(b.dataset.s==='nixed'&&!HC.confirmDel('Nix this project? It drops to the bottom of Home Central but keeps everything.'))return;
+    HC.flash(hst,'Saving...');
+    try{const d=await HC.api.post({action:'project.edit',id,status:b.dataset.s}); P=d.project; renderHead(); HC.flash(hst,'');}
+    catch(err){HC.flash(hst,err.message,true);}
+  });
+  $('#edit').addEventListener('click',()=>{
+    HC.modal({title:'Edit project',left:'<button type="button" class="btn danger sm left" data-del>Delete project</button>',body:
+      '<label class="f"><b>Name</b><input type="text" name="name" required maxlength="120" value="'+esc(P.name)+'"></label>'+
+      '<label class="f"><b>Summary</b><textarea name="summary" rows="3" maxlength="2000">'+esc(P.summary)+'</textarea></label>'+
+      '<div class="two"><label class="f"><b>Budget</b><input type="number" name="budget" min="0" step="1" value="'+esc(P.budget)+'"></label><label class="f"><b>Tags</b><input type="text" name="tags" maxlength="200" value="'+esc(P.tags)+'"></label></div>'+
+      '<div class="two"><label class="f"><b>Start</b><input type="date" name="start" value="'+esc(P.start)+'"></label><label class="f"><b>Target finish</b><input type="date" name="target" value="'+esc(P.target)+'"></label></div>'+
+      '<label class="f"><b>Concept page</b><input type="url" name="page" value="'+esc(P.page)+'" placeholder="https://... a rendering or design page"></label>',
+      onOpen:(f,close,st)=>{f.querySelector('[data-del]').addEventListener('click',async()=>{
+        if(!HC.confirmDel('Delete "'+P.name+'" with all its tasks, photos, ideas and files? The Drive folder goes to the trash.'))return;
+        HC.flash(st,'Deleting...'); try{await HC.api.post({action:'project.delete',id}); location.href='index.html';}catch(err){HC.flash(st,err.message,true);}
+      });},
+      onSubmit:async f=>{const d=await HC.api.post({action:'project.edit',id,name:f.name.value,summary:f.summary.value,budget:f.budget.value,tags:f.tags.value,start:f.start.value,target:f.target.value,page:f.page.value}); P=d.project; renderHead();}
+    });
+  });
+
+  // ----- tasks -----
+  const tform=$('#task-form'), tst=tform.querySelector('.status');
+  let showDone=false;
+  function taskLi(t){
+    const over=t.due&&!t.done&&t.due<HC.today();
+    return '<li data-id="'+esc(t.id)+'" class="'+(t.done?'done':'')+'"><input type="checkbox" '+(t.done?'checked':'')+' aria-label="Done"><div><div class="t" data-edit title="Click to edit">'+esc(t.text)+'</div><div class="tm">'+(t.due?'<span class="'+(over?'over':'')+'">'+(over?'overdue ':'due ')+esc(HC.day(t.due))+'</span>':'')+(t.assignee?'<span>'+esc(t.assignee)+'</span>':'')+(t.done&&t.completed?'<span>done '+esc(HC.day(t.completed.slice(0,10)))+'</span>':'')+'</div></div><div class="ops"><button type="button" class="lnk bad" data-del>Delete</button></div></li>';
+  }
+  function renderTasks(){
+    const open=tasks.filter(t=>!t.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:(a.due||'9999')>(b.due||'9999')?1:byDate(a,b)), done=tasks.filter(t=>t.done).sort((a,b)=>new Date(b.completed||0)-new Date(a.completed||0));
+    $('#task-cnt').textContent=tasks.length?done.length+' of '+tasks.length+' done':'';
+    const pr=$('#task-prog'); pr.style.display=tasks.length?'':'none'; pr.querySelector('i').style.width=HC.progress({tasks:tasks.length,tasksDone:done.length})+'%';
+    $('#task-list').innerHTML=open.length?open.map(taskLi).join(''):'<li class="empty" style="display:block;border:0">'+(tasks.length?'Everything is done.':'No tasks yet.')+'</li>';
+    const tg=$('#task-done-toggle'); tg.style.display=done.length?'':'none'; tg.textContent=(showDone?'Hide ':'Show ')+done.length+' completed';
+    const dl=$('#task-done'); dl.style.display=showDone&&done.length?'':'none'; dl.innerHTML=done.map(taskLi).join('');
+  }
+  $('#task-done-toggle').addEventListener('click',()=>{showDone=!showDone;renderTasks();});
+  tform.addEventListener('submit',async e=>{
+    e.preventDefault(); const text=tform.text.value.trim(); if(!text)return;
+    tform.querySelector('button').disabled=true; HC.flash(tst,'Adding...');
+    try{const d=await HC.api.post({action:'task.add',project:id,text,due:tform.due.value,assignee:tform.assignee.value}); tasks.push(d.task); tform.text.value=''; tform.due.value=''; renderTasks(); HC.flash(tst,''); tform.text.focus();}
+    catch(err){HC.flash(tst,err.message,true);}
+    tform.querySelector('button').disabled=false;
+  });
+  document.addEventListener('change',async e=>{
+    const cb=e.target; if(!(cb.matches('.tasks input[type=checkbox]')))return;
+    const li=cb.closest('li'), t=tasks.find(x=>x.id===li.dataset.id); if(!t)return;
+    cb.disabled=true;
+    try{const d=await HC.api.post({action:'task.toggle',id:t.id}); Object.assign(t,d.task); renderTasks();}
+    catch(err){cb.checked=!cb.checked; cb.disabled=false; HC.flash(tst,err.message,true);}
+  });
+  document.addEventListener('click',async e=>{
+    const li=e.target.closest('.tasks li'); if(!li)return;
+    const t=tasks.find(x=>x.id===li.dataset.id); if(!t)return;
+    if(e.target.closest('[data-del]')){
+      if(!HC.confirmDel('Delete this task?'))return;
+      try{await HC.api.post({action:'task.delete',id:t.id}); tasks=tasks.filter(x=>x!==t); renderTasks();}catch(err){HC.flash(tst,err.message,true);}
+    }else if(e.target.closest('[data-edit]')&&!li.classList.contains('editing')){
+      li.classList.add('editing');
+      li.innerHTML='<form class="task-edit"><input type="text" name="text" value="'+esc(t.text)+'" maxlength="500" required aria-label="Task"><input type="date" name="due" value="'+esc(t.due)+'" aria-label="Due"><select name="assignee" aria-label="Who"><option value="">Anyone</option>'+['Dave','Nate','Cissy'].map(n=>'<option '+(t.assignee===n?'selected':'')+'>'+n+'</option>').join('')+'</select><div class="row" style="grid-column:1/-1"><button type="submit" class="btn sm">Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button><span class="status muted" style="flex-basis:auto"></span></div></form>';
+      const f=li.querySelector('form'), st=f.querySelector('.status'); f.text.focus();
+      f.querySelector('[data-cancel]').addEventListener('click',renderTasks);
+      f.addEventListener('submit',async ev=>{ev.preventDefault(); HC.flash(st,'Saving...');
+        try{const d=await HC.api.post({action:'task.edit',id:t.id,text:f.text.value,due:f.due.value,assignee:f.assignee.value}); Object.assign(t,d.task); renderTasks();}catch(err){HC.flash(st,err.message,true);}
+      });
+    }
+  });
+
+  // ----- photos -----
+  const pst=$('#photo-st'), drop=$('#photo-drop');
+  function photoTile(x){
+    const isCover=P.cover&&P.cover===x.url, parent=x.parent?photos.find(y=>y.id===x.parent):null;
+    return '<div class="ph '+(x.kind==='markup'?'markup':'')+'" data-id="'+esc(x.id)+'"><a class="img" href="'+esc(x.url)+'" data-lb data-cap="'+esc(x.caption||x.name)+'">'+HC.img(x.url,600,x.caption||x.name)+'</a><div class="pb">'+
+      '<div class="row" style="justify-content:space-between">'+(x.kind==='markup'?'<span class="pill markup">Mark-up'+(parent?' of '+esc(parent.name.slice(0,18)):'')+'</span>':'<span class="idea-meta"><b>'+esc(x.author||'')+'</b> '+esc(HC.when(x.created))+'</span>')+(isCover?'<span class="cover-tag">cover</span>':'')+'</div>'+
+      '<div class="cap '+(x.caption?'':'none')+'" data-cap title="Click to edit the caption">'+esc(x.caption||'Add a caption')+'</div>'+
+      '<div class="ops"><button type="button" class="lnk" data-mark>Mark up</button>'+(x.kind!=='markup'&&!isCover?'<button type="button" class="lnk" data-cover>Set as cover</button>':'')+'<button type="button" class="lnk bad" data-del>Delete</button></div></div></div>';
+  }
+  function renderPhotos(){
+    const list=photos.slice().sort(byDate);
+    // keep each mark-up right after the photo it was drawn on
+    const ordered=[]; list.filter(x=>!x.parent||!list.some(y=>y.id===x.parent)).forEach(x=>{ordered.push(x); list.filter(y=>y.parent===x.id).forEach(y=>ordered.push(y));});
+    $('#photo-cnt').textContent=photos.length?photos.length+(photos.length===1?' photo':' photos'):'';
+    $('#photo-grid').innerHTML=ordered.length?ordered.map(photoTile).join(''):'<div class="empty">No photos yet. Add the first one above.</div>';
+  }
+  async function addPhotos(fileList){
+    const fs=Array.from(fileList||[]).filter(f=>/^image\//.test(f.type)||/\.(heic|heif|jpe?g|png|webp)$/i.test(f.name));
+    if(!fs.length){HC.flash(pst,'No images in that selection.',true);return;}
+    for(let i=0;i<fs.length;i++){
+      HC.flash(pst,'Uploading '+(i+1)+' of '+fs.length+': '+fs[i].name+'...');
+      try{const ph=await HC.shrink(fs[i]); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data}}); photos.push(d.photo); if(d.cover)P.cover=d.cover; renderPhotos();}
+      catch(err){HC.flash(pst,'Could not upload '+fs[i].name+': '+err.message,true);return;}
+    }
+    HC.flash(pst,fs.length+(fs.length===1?' photo added.':' photos added.')); setTimeout(()=>HC.flash(pst,''),3000);
+  }
+  drop.querySelector('input').addEventListener('change',e=>{addPhotos(e.target.files);e.target.value='';});
+  drop.querySelector('label').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();drop.querySelector('input').click();}});
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+  drop.addEventListener('drop',e=>addPhotos(e.dataTransfer.files));
+  $('#photo-grid').addEventListener('click',async e=>{
+    const tile=e.target.closest('.ph'); if(!tile)return;
+    const x=photos.find(p=>p.id===tile.dataset.id); if(!x)return;
+    if(e.target.closest('[data-del]')){
+      if(!HC.confirmDel('Delete this '+(x.kind==='markup'?'mark-up':'photo and its mark-ups')+'? The file goes to the Drive trash.'))return;
+      try{const d=await HC.api.post({action:'photo.delete',id:x.id}); photos=photos.filter(p=>p.id!==x.id&&p.parent!==x.id); P.cover=d.cover||''; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
+    }else if(e.target.closest('[data-cover]')){
+      try{const d=await HC.api.post({action:'photo.cover',id:x.id}); P.cover=d.cover; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
+    }else if(e.target.closest('[data-mark]')){
+      HC.openMarkup({url:x.url,name:x.name,title:x.caption||x.name,onPost:async r=>{
+        const d=await HC.api.post({action:'photo.add',project:id,photo:r.photo,caption:r.text,kind:'markup',parent:x.kind==='markup'&&x.parent?x.parent:x.id});
+        photos.push(d.photo); renderPhotos(); tile.scrollIntoView({block:'nearest'});
+      }});
+    }else if(e.target.closest('[data-cap]')&&!tile.querySelector('textarea')){
+      const cap=tile.querySelector('[data-cap]');
+      cap.outerHTML='<form class="idea-edit" data-capform><textarea rows="2" maxlength="2000" aria-label="Caption">'+esc(x.caption)+'</textarea><div class="row"><button type="submit" class="btn sm">Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button></div></form>';
+      const f=tile.querySelector('[data-capform]'), ta=f.querySelector('textarea'); ta.focus();
+      f.querySelector('[data-cancel]').addEventListener('click',renderPhotos);
+      ta.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();f.requestSubmit();}});
+      f.addEventListener('submit',async ev=>{ev.preventDefault(); try{const d=await HC.api.post({action:'photo.edit',id:x.id,caption:ta.value}); Object.assign(x,d.photo); renderPhotos();}catch(err){HC.flash(pst,err.message,true);}});
+    }
+  });
+
+  // ----- ideas -----
+  const iform=$('#idea-form'), ist=iform.querySelector('.status');
+  iform.querySelector('.pick').outerHTML=HC.pickerHtml('Add a photo');
+  const ipick=HC.wirePicker(iform.querySelector('.photo-pick'),m=>HC.flash(ist,m,true));
+  const ideaPhoto=x=>x.photo?'<a class="idea-photo" href="'+esc(x.photo)+'" data-lb data-cap="'+esc(x.text.slice(0,120))+'">'+HC.img(x.photo,400,'Photo attached to this idea')+'</a>':'';
+  function renderIdeas(force){
+    const list=$('#idea-list'); if(!force&&list.querySelector('.idea-edit'))return;
+    const mine=ideas.slice().sort(byDate);
+    $('#idea-cnt').textContent=mine.length?mine.length+(mine.length===1?' idea':' ideas'):'';
+    list.innerHTML=mine.length?mine.map(x=>'<li data-id="'+esc(x.id)+'"><div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; '+esc(HC.when(x.created))+(x.updated&&x.updated!==x.created?' &middot; edited':'')+(x.title?' &middot; '+esc(x.title):'')+'</div>'+(x.text?'<p class="idea-text">'+esc(x.text)+'</p>':'')+ideaPhoto(x)+'<div class="row"><button type="button" class="lnk" data-edit>Edit</button></div></li>').join(''):'<li class="empty">No ideas yet.</li>';
+  }
+  iform.querySelector('textarea').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();iform.requestSubmit();}});
+  iform.addEventListener('submit',async e=>{
+    e.preventDefault(); const ta=iform.querySelector('textarea'), text=ta.value.trim(), photo=ipick.get();
+    if(!text&&!photo){HC.flash(ist,'Type an idea or attach a photo first.');return;}
+    iform.querySelector('button[type=submit]').disabled=true; HC.flash(ist,photo?'Posting with photo...':'Posting...');
+    try{const d=await HC.api.post({action:'idea.add',project:id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined}); ideas.push(d.idea); ta.value=''; ipick.clear(); renderIdeas(true); HC.flash(ist,'');}
+    catch(err){HC.flash(ist,err.message,true);}
+    iform.querySelector('button[type=submit]').disabled=false;
+  });
+  $('#idea-list').addEventListener('click',e=>{
+    const b=e.target.closest('[data-edit]'); if(!b)return;
+    const li=b.closest('li'), x=ideas.find(i=>i.id===li.dataset.id); if(!x)return;
+    li.innerHTML='<div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; editing</div><div class="idea-edit"><textarea rows="3" aria-label="Edit idea">'+esc(x.text)+'</textarea>'+(x.photo?'<div class="photo-cur">'+ideaPhoto(x)+' <button type="button" class="lnk" data-rmphoto>Remove photo</button></div>':'')+HC.pickerHtml(x.photo?'Replace photo':'Add a photo')+'<div class="row"><button type="button" class="btn sm" data-save>Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button><button type="button" class="lnk bad" data-del>Delete</button><span class="status muted" style="flex-basis:auto"></span></div></div>';
+    const ta=li.querySelector('textarea'), st=li.querySelector('.status'); ta.focus(); let removePhoto=false;
+    const rm=li.querySelector('[data-rmphoto]'); if(rm)rm.addEventListener('click',()=>{removePhoto=true;li.querySelector('.photo-cur').remove();});
+    const picker=HC.wirePicker(li.querySelector('.photo-pick'),m=>HC.flash(st,m,true));
+    ta.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();li.querySelector('[data-save]').click();}});
+    li.querySelector('[data-cancel]').addEventListener('click',()=>renderIdeas(true));
+    li.querySelector('[data-save]').addEventListener('click',async()=>{
+      const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo&&(removePhoto||!x.photo)){HC.flash(st,'Empty. Use Delete to remove it.');return;}
+      li.querySelectorAll('button').forEach(b=>b.disabled=true); HC.flash(st,'Saving...');
+      try{const d=await HC.api.post({action:'idea.edit',id:x.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined,removePhoto}); if(d.deleted)ideas=ideas.filter(i=>i!==x); else Object.assign(x,d.idea); renderIdeas(true);}
+      catch(err){HC.flash(st,err.message,true); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
+    });
+    li.querySelector('[data-del]').addEventListener('click',async()=>{
+      if(!HC.confirmDel('Delete this idea for everyone?'))return;
+      li.querySelectorAll('button').forEach(b=>b.disabled=true); HC.flash(st,'Deleting...');
+      try{await HC.api.post({action:'idea.delete',id:x.id}); ideas=ideas.filter(i=>i!==x); renderIdeas(true);}
+      catch(err){HC.flash(st,err.message,true); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
+    });
+  });
+
+  // ----- files -----
+  const fform=$('#file-form'), fst=fform.querySelector('.status'), fpick=$('#file-pick'), finp=fpick.querySelector('input');
+  fform.kind.innerHTML=HC.FILE_KINDS.map(k=>'<option>'+k+'</option>').join('');
+  finp.addEventListener('change',()=>{fpick.firstChild.textContent=finp.files.length?(finp.files.length===1?finp.files[0].name.slice(0,28):finp.files.length+' files'):'Choose files';});
+  fpick.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();finp.click();}});
+  const kindSel=(v)=>'<select name="kind" aria-label="Kind">'+HC.FILE_KINDS.map(k=>'<option '+(k===v?'selected':'')+'>'+k+'</option>').join('')+'</select>';
+  function fileLi(f){
+    return '<li data-id="'+esc(f.id)+'"><div class="ico">'+esc(HC.fileExt(f.name).slice(0,4))+'</div><div><a class="nm" href="'+esc(f.url)+'" target="_blank" rel="noopener"'+(HC.isData(f.url)?' download="'+esc(f.name)+'"':'')+'>'+esc(f.name)+'</a><div class="fm"><span class="pill">'+esc(f.kind)+'</span>'+(f.amount!==''&&f.amount!=null?'<span>'+esc(HC.money(f.amount))+'</span>':'')+'<span>'+esc(f.author||'')+' '+esc(HC.when(f.created))+'</span></div>'+(f.note?'<div class="note">'+esc(f.note)+'</div>':'')+'</div><div class="ops"><button type="button" class="lnk" data-edit>Edit</button><button type="button" class="lnk bad" data-del>Delete</button></div></li>';
+  }
+  function renderFiles(){
+    const list=files.slice().sort(byDate);
+    $('#file-cnt').textContent=list.length?list.length+(list.length===1?' file':' files'):'';
+    $('#file-list').innerHTML=list.length?list.map(fileLi).join(''):'<li class="empty" style="display:block;border:0">No files yet.</li>';
+    const sum=k=>files.filter(f=>f.kind===k&&f.amount!==''&&f.amount!=null).reduce((n,f)=>n+(+f.amount),0);
+    const q=sum('Quote'), inv=sum('Invoice')+sum('Receipt'), t=[];
+    if(P.budget!==''&&P.budget!=null)t.push('Budget <b>'+esc(HC.money(P.budget))+'</b>');
+    if(q)t.push('Quotes <b>'+esc(HC.money(q))+'</b>');
+    if(inv)t.push('Invoices and receipts <b>'+esc(HC.money(inv))+'</b>'+(P.budget?' ('+Math.round(100*inv/P.budget)+'% of budget)':''));
+    $('#totals').innerHTML=t.join('<span>&middot;</span>');
+  }
+  fform.addEventListener('submit',async e=>{
+    e.preventDefault(); const fs=Array.from(finp.files||[]); if(!fs.length){HC.flash(fst,'Choose a file first.');return;}
+    fform.querySelector('button[type=submit]').disabled=true;
+    for(let i=0;i<fs.length;i++){
+      HC.flash(fst,'Uploading '+(i+1)+' of '+fs.length+': '+fs[i].name+'...');
+      try{const b=await HC.readAny(fs[i]); const d=await HC.api.post({action:'file.add',project:id,file:b,kind:fform.kind.value,note:fform.note.value,amount:fs.length===1?fform.amount.value:''}); files.push(d.file); renderFiles();}
+      catch(err){HC.flash(fst,'Could not upload '+fs[i].name+': '+err.message,true); fform.querySelector('button[type=submit]').disabled=false; return;}
+    }
+    finp.value=''; fpick.firstChild.textContent='Choose files'; fform.note.value=''; fform.amount.value=''; HC.flash(fst,fs.length+(fs.length===1?' file added.':' files added.')); setTimeout(()=>HC.flash(fst,''),3000);
+    fform.querySelector('button[type=submit]').disabled=false;
+  });
+  $('#file-list').addEventListener('click',async e=>{
+    const li=e.target.closest('li'); if(!li)return; const f=files.find(x=>x.id===li.dataset.id); if(!f)return;
+    if(e.target.closest('[data-del]')){
+      if(!HC.confirmDel('Delete "'+f.name+'"? It goes to the Drive trash.'))return;
+      try{await HC.api.post({action:'file.delete',id:f.id}); files=files.filter(x=>x!==f); renderFiles();}catch(err){HC.flash(fst,err.message,true);}
+    }else if(e.target.closest('[data-edit]')){
+      li.classList.add('editing');
+      li.innerHTML='<form class="task-edit" style="grid-template-columns:1fr"><input type="text" name="name" value="'+esc(f.name)+'" maxlength="120" aria-label="Name"><div class="row"><div style="flex:0 0 150px">'+kindSel(f.kind)+'</div><input class="grow" type="text" name="note" value="'+esc(f.note)+'" maxlength="1000" placeholder="Note" aria-label="Note"><input type="number" name="amount" min="0" step="0.01" value="'+esc(f.amount)+'" placeholder="Amount" aria-label="Amount" style="width:130px"></div><div class="row"><button type="submit" class="btn sm">Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button><span class="status muted" style="flex-basis:auto"></span></div></form>';
+      const fm=li.querySelector('form'), st=fm.querySelector('.status');
+      fm.querySelector('[data-cancel]').addEventListener('click',renderFiles);
+      fm.addEventListener('submit',async ev=>{ev.preventDefault(); HC.flash(st,'Saving...'); try{const d=await HC.api.post({action:'file.edit',id:f.id,name:fm.name.value,kind:fm.kind.value,note:fm.note.value,amount:fm.amount.value}); Object.assign(f,d.file); renderFiles();}catch(err){HC.flash(st,err.message,true);}});
+    }
+  });
+
+  // ----- load -----
+  async function load(quiet){
+    if(!quiet)HC.flash(hst,'Loading...');
+    try{
+      const d=await HC.api.get({action:'project',id});
+      P=d.project; tasks=d.tasks; photos=d.photos; ideas=d.ideas; files=d.files;
+      renderHead(); renderTasks(); renderPhotos(); renderIdeas(); renderFiles(); if(!quiet)HC.flash(hst,'');
+      if(HC.C.DRIVE_URL){const a=$('#folder-link'); a.href=HC.C.DRIVE_URL; a.style.display='';}
+    }catch(err){ if(!P){$('#name').textContent='Could not open this project'; $('#summary').innerHTML=esc(err.message)+'. <a href="index.html">Back to all projects</a>';} else HC.flash(hst,'Refresh failed: '+err.message,true); }
+  }
+  load();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!document.querySelector('.modal, #markup.on, .idea-edit, .editing'))load(true);});
+  setInterval(()=>{if(!document.querySelector('.modal, #markup.on, .idea-edit, .editing'))load(true);},120000);
+})();
+</script>
+</body>
+</html>

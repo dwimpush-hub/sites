@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Home Central: the family's home projects, from ideas to done.">
+<title>Home Central</title>
+<link rel="icon" href="favicon.jpg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap">
+<header class="topbar">
+  <a class="brand" href="index.html"><img src="logo-320.jpg" alt=""><span><b>Home Central</b><small>Projects around the house</small></span></a>
+  <div class="who"></div>
+</header>
+<div class="banner demo" style="display:none"><b>Demo mode.</b> Nothing is connected yet, so this data lives in this browser only. Set the web-app URL in config.js to share it through your Google Sheet. <button type="button" class="lnk" data-reset>Reset demo data</button></div>
+
+<div class="title">
+  <div>
+    <div class="eyebrow">Home Central</div>
+    <h1>What we are doing to the house</h1>
+    <p class="lede">Every project in one place: what is coming up, what is drafted and waiting, what is still just an idea, and what we decided against. Open a project for its photos, mark-ups, ideas, contracts and tasks.</p>
+  </div>
+  <div class="meta" id="meta"></div>
+</div>
+<div class="row" style="margin-bottom:6px"><button type="button" class="btn gold" id="new">+ New project</button><span class="status muted" id="st" aria-live="polite" style="flex-basis:auto"></span></div>
+
+<section id="s-upcoming"><div class="sec-head"><h2>Upcoming</h2><span class="cnt"></span></div><div class="grid"></div></section>
+<section id="s-pending"><div class="sec-head"><h2>Pending projects</h2><span class="cnt"></span></div><p class="muted small">Drafts and concepts with a plan or a rendering, waiting on a decision, a quote or a date.</p><div class="grid"></div></section>
+<section id="s-idea"><div class="sec-head"><h2>Project ideas</h2><span class="cnt"></span></div><div class="grid"></div></section>
+<section id="s-done"><div class="sec-head"><h2>Done</h2><span class="cnt"></span></div><div class="grid"></div></section>
+<section id="s-nixed"><details class="nixed"><summary>Nixed <span class="cnt"></span></summary><div class="grid"></div></details></section>
+
+<div class="foot"><span>Home Central keeps its records in a Google Sheet and its photos and files in Drive.</span><span class="links"></span></div>
+</div>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  if(!HC.requireLogin())return;
+  HC.topbar();
+  const $=s=>document.querySelector(s), st=$('#st');
+  let projects=[];
+  const groups={upcoming:p=>p.status==='upcoming'||p.status==='active', pending:p=>p.status==='pending', idea:p=>p.status==='idea', done:p=>p.status==='done', nixed:p=>p.status==='nixed'};
+  const empties={upcoming:'Nothing scheduled. Move a pending project here when it has a date.', pending:'No drafts yet.', idea:'No ideas yet. Add one with the button above.', done:'Nothing finished yet.', nixed:'Nothing nixed.'};
+  const sortKey=p=>(p.status==='active'?'0':'1')+(p.start||p.target||'9999')+p.name.toLowerCase();
+  function card(p){
+    const c=p.counts||{tasks:0,tasksDone:0,photos:0,ideas:0,files:0,nextDue:''};
+    const over=c.nextDue&&c.nextDue<HC.today();
+    const dates=p.start||p.target?[p.start?HC.day(p.start):'',p.target?'to '+HC.day(p.target):''].filter(Boolean).join(' '):'';
+    return '<a class="card '+HC.esc(p.status)+'" href="project.html?id='+encodeURIComponent(p.id)+'">'+
+      (p.cover?HC.img(p.cover,600,'',"cover"):'<div class="cover none"><img src="logo-320.jpg" alt=""></div>')+
+      '<div class="body"><div class="row" style="justify-content:space-between">'+HC.pill(p.status)+(dates?'<span class="when">'+HC.esc(dates)+'</span>':'')+'</div>'+
+      '<h3>'+HC.esc(p.name)+'</h3>'+(p.summary?'<p class="sum">'+HC.esc(p.summary)+'</p>':'')+
+      (c.tasks?'<div class="prog" title="'+c.tasksDone+' of '+c.tasks+' tasks done"><i style="width:'+HC.progress(c)+'%"></i></div>':'')+
+      '<div class="counts">'+(c.tasks?'<span>'+c.tasksDone+'/'+c.tasks+' tasks</span>':'')+(c.photos?'<span>'+c.photos+' photos</span>':'')+(c.ideas?'<span>'+c.ideas+' ideas</span>':'')+(c.files?'<span>'+c.files+' files</span>':'')+(p.budget!==''&&p.budget!=null?'<span>'+HC.esc(HC.money(p.budget))+'</span>':'')+(p.page?'<span>concept page</span>':'')+'</div>'+
+      (c.nextDue&&p.status!=='done'&&p.status!=='nixed'?'<div class="when'+(over?' over':'')+'">'+(over?'Overdue: ':'Next: ')+HC.esc(HC.day(c.nextDue))+'</div>':'')+
+      '</div></a>';
+  }
+  function render(){
+    Object.keys(groups).forEach(g=>{
+      const sec=document.getElementById('s-'+g), list=projects.filter(groups[g]).sort((a,b)=>sortKey(a)<sortKey(b)?-1:1);
+      sec.querySelector('.cnt').textContent=list.length?list.length+(list.length===1?' project':' projects'):'';
+      sec.querySelector('.grid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">'+empties[g]+'</div>';
+      if(g==='done')sec.style.display=list.length?'':'none';
+    });
+    const open=projects.reduce((n,p)=>n+((p.counts||{}).tasks||0)-((p.counts||{}).tasksDone||0),0);
+    const live=projects.filter(p=>p.status!=='done'&&p.status!=='nixed').length;
+    $('#meta').innerHTML='<b>'+projects.length+'</b> projects<br><b>'+live+'</b> live<br><b>'+open+'</b> open tasks';
+  }
+  async function load(quiet){
+    if(!quiet)HC.flash(st,'Loading...');
+    try{const d=await HC.api.get({action:'home'});projects=d.projects;render();if(!quiet)HC.flash(st,'');}
+    catch(e){HC.flash(st,'Could not load projects: '+e.message,true);}
+  }
+  $('#new').addEventListener('click',()=>{
+    HC.modal({title:'New project',submit:'Create project',body:
+      '<label class="f"><b>Name</b><input type="text" name="name" required maxlength="120" placeholder="Kitchen faucet, fence line, hall bath..."></label>'+
+      '<label class="f"><b>Where it stands</b><select name="status">'+Object.keys(HC.STATUS).filter(s=>s!=='done'&&s!=='nixed').map(s=>'<option value="'+s+'">'+HC.STATUS[s].label+' - '+HC.STATUS[s].hint+'</option>').join('')+'</select></label>'+
+      '<label class="f"><b>Summary</b><textarea name="summary" rows="3" maxlength="2000" placeholder="What it is and why"></textarea></label>'+
+      '<div class="two"><label class="f"><b>Budget</b><input type="number" name="budget" min="0" step="1" placeholder="0"></label><label class="f"><b>Tags</b><input type="text" name="tags" maxlength="200" placeholder="plumbing, outside"></label></div>'+
+      '<div class="two"><label class="f"><b>Start</b><input type="date" name="start"></label><label class="f"><b>Target finish</b><input type="date" name="target"></label></div>'+
+      '<label class="f"><b>Concept page (optional)</b><input type="url" name="page" placeholder="https://... a rendering or design page for this project"></label>',
+      working:'Creating...',
+      onSubmit:async f=>{
+        const d=await HC.api.post({action:'project.add',name:f.name.value,status:f.status.value,summary:f.summary.value,budget:f.budget.value,tags:f.tags.value,start:f.start.value,target:f.target.value,page:f.page.value});
+        location.href='project.html?id='+encodeURIComponent(d.project.id);
+      }});
+  });
+  load();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')load(true);});
+  setInterval(()=>load(true),120000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Sign in - Home Central</title>
+<link rel="icon" href="favicon.jpg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+body{min-height:100vh;display:grid;place-items:center;padding-block:24px}
+.login{width:min(420px,100%);background:var(--card);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:8px;padding:26px 24px 24px;display:grid;gap:16px;text-align:center}
+.login img{width:150px;height:150px;border-radius:50%;object-fit:cover;margin:0 auto;box-shadow:0 0 0 3px var(--gold),0 10px 30px rgba(0,0,0,.25)}
+.login h1{font-size:30px}
+.names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.names button{font:inherit;font-family:var(--display);font-size:19px;font-weight:600;padding:12px 6px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.names button.on{background:var(--jay);border-color:var(--jay);color:#fff}
+.login form{display:grid;gap:10px;text-align:left}
+</style>
+</head>
+<body>
+<div class="login">
+  <img src="logo-320.jpg" alt="Home Central: a blue jay in a top hat">
+  <div><div class="eyebrow">Home Central</div><h1>Who is this?</h1></div>
+  <form id="f">
+    <div class="names" role="radiogroup" aria-label="Your name">
+      <button type="button" data-u="dave">Dave</button><button type="button" data-u="nate">Nate</button><button type="button" data-u="cissy">Cissy</button>
+    </div>
+    <label class="f"><b>Password</b><input type="password" name="pw" autocomplete="current-password" required></label>
+    <button type="submit" class="btn gold">Sign in</button>
+    <div class="status muted" aria-live="polite"></div>
+  </form>
+</div>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  const next=new URLSearchParams(location.search).get('next')||'index.html';
+  if(HC.session()){location.replace(/^[\w.-]+\.html(\?.*)?$/.test(next)?next:'index.html');return;}
+  const f=document.getElementById('f'), st=f.querySelector('.status'); let who='';
+  try{who=localStorage.getItem('hc-last-user')||'';}catch(e){}
+  const sync=()=>f.querySelectorAll('[data-u]').forEach(b=>{b.classList.toggle('on',b.dataset.u===who);b.setAttribute('aria-checked',b.dataset.u===who);});
+  f.querySelectorAll('[data-u]').forEach(b=>b.addEventListener('click',()=>{who=b.dataset.u;sync();f.pw.focus();}));
+  sync();
+  f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(!who){HC.flash(st,'Pick your name first.',true);return;}
+    HC.flash(st,'Checking...');
+    try{
+      if(!window.crypto||!crypto.subtle)throw new Error('this page needs https (or localhost) to sign in');
+      const key=await HC.sha256(f.pw.value);
+      if(key!==HC.PASS_HASH)throw new Error('wrong password');
+      if(HC.C.API){ // confirm with the sheet script too, so a stale password fails here and not on the first save
+        const r=await fetch(HC.C.API+'?'+new URLSearchParams({action:'login',user:who,key}).toString(),{redirect:'follow'});
+        const d=await r.json(); if(!d.ok)throw new Error(d.error||'sign-in refused');
+      }
+      HC.setSession({user:who,key});
+      try{localStorage.setItem('hc-last-user',who);}catch(err){}
+      location.replace(/^[\w.-]+\.html(\?.*)?$/.test(next)?next:'index.html');
+    }catch(err){HC.flash(st,err.message,true);}
+  });
+})();
+</script>
+</body>
+</html>
