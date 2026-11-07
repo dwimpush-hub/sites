@@ -231,6 +231,7 @@ section:first-of-type{border-top:0}
 
 /* concept sheet */
 .notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.notes .empty{grid-column:1/-1}
 .notes h3{margin-bottom:8px}
 .notes ul{padding-left:18px;list-style:disc}
 .notes li{margin-bottom:6px;font-size:15px}
@@ -245,7 +246,16 @@ section:first-of-type{border-top:0}
 @media (max-width:860px){.station{grid-template-columns:1fr}}
 .station .txt{min-width:0}
 .station .txt h3{margin:4px 0 10px}
-.station .txt p{font-size:15px;white-space:pre-wrap}
+.station .txt p{font-size:15px}
+.station .liberty{border-left:3px solid var(--gold);padding:6px 12px;background:var(--card);font-size:14px;margin-top:10px}
+.station .liberty b{color:var(--navy)}
+.cmp-stage .before-wrap img.mk{display:none}
+.cmp-stage.show-mk .before-wrap img.bf{display:none}
+.cmp-stage.show-mk .before-wrap img.mk{display:block}
+.cmp-stage.solo{cursor:default}
+.cmp-bar label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.cmp-bar label.muted{cursor:default}
+.cmp-bar .lnk{font-size:13px}
 .station .txt .ops{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;margin-top:10px;align-items:center}
 .station .txt .ops label.lnk{display:inline}
 .station .txt .ops input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}

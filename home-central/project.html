@@ -25,8 +25,25 @@
   </div>
   <div class="meta-grid" id="mg"></div>
   <div class="timeline" id="tl" style="display:none"></div>
-  <nav class="subnav"><a href="#tasks">Tasks</a><a href="#photos">Photos</a><a href="#ideas">Ideas</a><a href="#files">Files</a><a id="concept-link" href="#" style="color:var(--gold)">Concept sheet &rarr;</a></nav>
+  <nav class="subnav"><a href="#notes-sec">Materials and notes</a><a href="#walk">The walk</a><a href="#tasks">Tasks</a><a href="#ideas">Ideas</a><a href="#files">Files</a></nav>
 </div>
+
+
+<section id="notes-sec">
+  <div class="sec-head"><h2>Materials and notes</h2><button type="button" class="btn ghost sm" id="edit-notes">Edit notes</button></div>
+  <div class="notes" id="notes"></div>
+</section>
+
+<section id="walk">
+  <div class="sec-head"><h2>The walk</h2><span class="cnt" id="photo-cnt"></span></div>
+  <p class="muted small">Every photo is a station, in walking order. Drag the handle to compare today with the concept once a rendering is attached. Tick my markup to see the latest drawing on the left instead of the photo. Each station has an ideas box underneath: what you post stays with that spot. Mark up this view draws on the concept or the photo, one colour per call-out, and says what each colour means.</p>
+  <div class="drop" id="photo-drop">
+    <label class="btn gold" tabindex="0">Add a station<input type="file" accept="image/*" multiple aria-label="Add station photos"></label>
+    <span class="small muted">a photo of the spot as it is today, or drop photos here. Each one is shrunk to 1600 px and saved to the project folder in Drive. Add several at once and put them in order with the arrows.</span>
+    <div class="status muted" aria-live="polite" id="photo-st"></div>
+  </div>
+  <div id="stations"></div>
+</section>
 
 <section id="tasks">
   <div class="sec-head"><h2>Tasks</h2><span class="cnt" id="task-cnt"></span></div>
@@ -43,18 +60,10 @@
   <ul class="tasks" id="task-done" style="display:none"></ul>
 </section>
 
-<section id="photos">
-  <div class="sec-head"><h2>Photos and mark-ups</h2><span class="cnt" id="photo-cnt"></span></div>
-  <div class="drop" id="photo-drop">
-    <label class="btn gold" tabindex="0">Add photos<input type="file" accept="image/*" multiple aria-label="Add photos"></label>
-    <span class="small muted">or drop photos here. Each one is shrunk to 1600 px and saved to the project folder in Drive. Use Mark up on any photo to draw on it and say what each colour means. Every photo is also a station on the project's concept sheet, where a rendering can be attached to it.</span>
-    <div class="status muted" aria-live="polite" id="photo-st"></div>
-  </div>
-  <div class="photos" id="photo-grid"></div>
-</section>
 
 <section id="ideas">
-  <div class="sec-head"><h2>Ideas</h2><span class="cnt" id="idea-cnt"></span></div>
+  <div class="sec-head"><h2>Other ideas</h2><span class="cnt" id="idea-cnt"></span></div>
+  <p class="muted small">Ideas about the project as a whole. Ideas for one spot go in the box under that station.</p>
   <form class="ideas-form" id="idea-form">
     <textarea rows="2" placeholder="An idea, a question, a link..." maxlength="2000" aria-label="Idea"></textarea>
     <div class="row"><div class="pick"></div><span class="grow"></span><button type="submit" class="btn">Post</button><div class="status muted" aria-live="polite"></div></div>
@@ -96,8 +105,8 @@
   function renderHead(){
     document.title=P.name+' - Home Central';
     $('#name').textContent=P.name; $('#summary').textContent=P.summary||'';
-    $('#meta').innerHTML=HC.pill(P.status)+'<br>'+(P.created?'added '+esc(HC.day(P.created.slice(0,10))):'')+(P.updated?'<br>updated '+esc(HC.when(P.updated)):'');
-    $('#controls').style.display=''; $('#concept-link').href='concept.html?id='+encodeURIComponent(id);
+    $('#meta').innerHTML=HC.pill(P.status)+'<br>'+(stations().length?stations().length+' station'+(stations().length===1?'':'s')+'<br>':'')+(P.created?'added '+esc(HC.day(P.created.slice(0,10))):'')+(P.updated?'<br>updated '+esc(HC.when(P.updated)):'');
+    $('#controls').style.display='';
     $('#steps').innerHTML=Object.keys(HC.STATUS).map((s,i)=>(i===4?'<span class="gap"></span>':'')+'<button type="button" data-s="'+s+'" class="'+(P.status===s?'on':'')+'" title="'+esc(HC.STATUS[s].hint)+'">'+esc(HC.STATUS[s].label)+'</button>').join('');
     const mg=[];
     if(P.budget!==''&&P.budget!=null)mg.push(['Budget',HC.money(P.budget)]);
@@ -181,60 +190,143 @@
     }
   });
 
-  // ----- photos -----
+  // ----- materials and notes -----
+  function renderNotes(){
+    const n=[['Materials',HC.rich(P.materials)],['Details',HC.rich(P.details)],['Build sequence',HC.rich(P.sequence,true)]].filter(x=>x[1]);
+    $('#notes').innerHTML=n.length?n.map(x=>'<div><h3>'+x[0]+'</h3>'+x[1]+'</div>').join(''):'<div class="empty">Nothing written yet. Edit notes takes the materials, the details a contractor should know, and the build sequence.</div>';
+  }
+  $('#edit-notes').addEventListener('click',()=>{
+    HC.modal({title:'Materials and notes',body:
+      '<p class="small muted" style="margin:0">Plain text. A blank line starts a new paragraph; lines starting with "- " make a list; a line before a list becomes its heading. The build sequence is numbered one line per step.</p>'+
+      '<label class="f"><b>Materials</b><textarea name="materials" rows="5" maxlength="4000" placeholder="- Crushed granite: quarter-inch minus, compacted in two lifts. The whole patio.&#10;- River rock: 1 to 3 in, under the AC.">'+esc(P.materials||'')+'</textarea></label>'+
+      '<label class="f"><b>Details</b><textarea name="details" rows="7" maxlength="4000" placeholder="Edges and borders&#10;- Steel edging stays and grows.&#10;&#10;French drain&#10;- 4-in perforated pipe, holes down.">'+esc(P.details||'')+'</textarea></label>'+
+      '<label class="f"><b>Build sequence</b><textarea name="sequence" rows="5" maxlength="4000" placeholder="Lift the flagstone&#10;Dig the drain trench&#10;Set the edging">'+esc(P.sequence||'')+'</textarea></label>',
+      onSubmit:async f=>{const d=await HC.api.post({action:'project.edit',id,materials:f.materials.value,details:f.details.value,sequence:f.sequence.value}); P=d.project; renderNotes(); renderHead();}
+    });
+  });
+
+  // ----- the walk: every photo is a station, with its rendering, mark-ups and ideas -----
   const pst=$('#photo-st'), drop=$('#photo-drop');
-  function photoTile(x){
-    const isCover=P.cover&&P.cover===x.url, parent=x.parent?photos.find(y=>y.id===x.parent):null;
-    const child=x.kind==='markup'||x.kind==='render';
-    return '<div class="ph '+(child?'markup':'')+'" data-id="'+esc(x.id)+'"><a class="img" href="'+esc(x.url)+'" data-lb data-cap="'+esc(x.caption||x.name)+'">'+HC.img(x.url,600,x.caption||x.name)+'</a><div class="pb">'+
-      '<div class="row" style="justify-content:space-between">'+(child?'<span class="pill markup">'+(x.kind==='render'?'Rendering':'Mark-up')+(parent?' of '+esc(parent.name.slice(0,18)):'')+'</span>':'<span class="idea-meta"><b>'+esc(x.author||'')+'</b> '+esc(HC.when(x.created))+'</span>')+(isCover?'<span class="cover-tag">cover</span>':'')+'</div>'+
-      '<div class="cap '+(x.caption?'':'none')+'" data-cap title="Click to edit the caption">'+esc(x.caption||'Add a caption')+'</div>'+
-      '<div class="ops"><button type="button" class="lnk" data-mark>Mark up</button>'+(!child&&!isCover?'<button type="button" class="lnk" data-cover>Set as cover</button>':'')+'<button type="button" class="lnk bad" data-del>Delete</button></div></div></div>';
+  const ordOf=x=>x.order===''||x.order==null?1e9:+x.order;
+  const stations=()=>photos.filter(x=>x.kind==='photo').sort((a,b)=>ordOf(a)-ordOf(b)||byDate(a,b));
+  const renderOf=st=>photos.find(x=>x.kind==='render'&&x.parent===st.id);
+  const markupsOf=st=>photos.filter(x=>x.kind==='markup'&&x.parent===st.id).sort(byDate);
+  // caption format: "Title | where" on the first line, the note after it, and after a blank line the liberty taken
+  function parseCap(st,i){
+    const raw=String(st.caption||'').replace(/\r/g,''), lines=raw.split('\n'), first=(lines.shift()||'').split(' | ');
+    const rest=lines.join('\n').trim(), cut=rest.search(/\n\s*\n/);
+    return {title:first[0].trim()||('Station '+(i+1)), where:(first[1]||'').trim(), text:cut<0?rest:rest.slice(0,cut).trim(), liberty:cut<0?'':rest.slice(cut).trim()};
+  }
+  const joinCap=c=>(c.title.trim()+(c.where.trim()?' | '+c.where.trim():''))+'\n'+c.text.trim()+(c.liberty.trim()?'\n\n'+c.liberty.trim():'');
+  const bigImg=(u,cls,alt,eager)=>'<img class="'+cls+'" src="'+esc(HC.thumb(u,1600))+'" alt="'+esc(alt)+'"'+(eager?'':' loading="lazy" decoding="async"')+' referrerpolicy="no-referrer"'+(HC.isData(u)?'':' onerror="this.onerror=null;this.src=\''+esc(HC.alt(u,1600))+'\'"')+'>';
+  function ideaLi(x){
+    return '<li data-id="'+esc(x.id)+'"><div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; '+esc(HC.when(x.created))+(x.updated&&x.updated!==x.created?' &middot; edited':'')+(x.title&&!x.station?' &middot; '+esc(x.title):'')+'</div>'+(x.text?'<p class="idea-text">'+esc(x.text)+'</p>':'')+ideaPhoto(x)+'<div class="row"><button type="button" class="lnk" data-edit>Edit</button></div></li>';
+  }
+  function stationHtml(st,i,n){
+    const r=renderOf(st), mks=markupsOf(st), last=mks[mks.length-1], mine=ideas.filter(x=>x.station===st.id).sort(byDate), c=parseCap(st,i), isCover=P.cover&&P.cover===st.url;
+    const stage='<div class="cmp-stage'+(r?'':' solo')+'" data-stage>'+(r?bigImg(r.url,'af','Rendering: '+c.title,i===0):'')+'<div class="before-wrap"'+(r?' style="clip-path:inset(0 50% 0 0)"':'')+'>'+bigImg(st.url,'bf',c.title,i===0)+(last?bigImg(last.url,'mk','Mark-up of '+c.title,false):'')+'</div>'+(r?'<div class="handle" style="left:50%"></div><span class="tag l">Today</span><span class="tag r">Concept</span>':'')+'</div>';
+    const bar='<div class="cmp-bar">'+(r?'<input type="range" min="0" max="100" value="50" aria-label="Compare today and the concept">':'<span class="muted small">No rendering yet. Attach one and this becomes a before/after slider.</span>')+'<label'+(last?'':' class="muted" title="Draw on this view first"')+'><input type="checkbox" data-mk'+(last?'':' disabled')+'> my markup</label><a class="lnk" href="'+esc(st.url)+'" data-lb data-cap="'+esc(c.title)+'">full size</a></div>';
+    return '<article class="station" id="st-'+esc(st.id)+'" data-id="'+esc(st.id)+'"><figure class="cmp">'+stage+bar+'</figure>'+
+      '<div class="txt"><div class="eyebrow">Station '+(i+1)+(c.where?' &middot; '+esc(c.where):'')+'</div><h3>'+esc(c.title)+'</h3>'+(c.text?'<p>'+esc(c.text).replace(/\n/g,'<br>')+'</p>':'<p class="muted">No note for this view yet.</p>')+(c.liberty?'<div class="liberty"><b>Liberty taken.</b> '+esc(c.liberty).replace(/\n/g,'<br>')+'</div>':'')+
+      '<div class="ops"><span class="small muted">'+esc(st.author||'')+' '+esc(HC.when(st.created))+(isCover?' &middot; cover':'')+'</span></div>'+
+      '<div class="ops"><button type="button" class="lnk" data-text>Edit text</button><label class="lnk" tabindex="0">'+(r?'Replace rendering':'Attach rendering')+'<input type="file" accept="image/*" data-render aria-label="Attach a rendering"></label>'+(r?'<button type="button" class="lnk" data-rmrender>Remove rendering</button>':'')+(isCover?'':'<button type="button" class="lnk" data-cover>Set as cover</button>')+'</div>'+
+      '<div class="ops">'+(i>0?'<button type="button" class="lnk" data-up>&uarr; Earlier</button>':'')+(i<n-1?'<button type="button" class="lnk" data-down>&darr; Later</button>':'')+'<button type="button" class="lnk bad" data-del>Remove station</button></div></div>'+
+      '<div class="st-ideas"><div class="sec-head" style="margin-bottom:4px"><span class="eyebrow">Ideas for this spot</span><span class="cnt">'+(mine.length+mks.length?(mine.length+mks.length)+' so far':'')+'</span></div>'+
+      (mks.length?'<div class="mk-list">'+mks.map(m=>'<div class="mk-item"><a href="'+esc(m.url)+'" data-lb data-cap="'+esc(m.caption)+'">'+HC.img(m.url,400,'Mark-up')+'</a><div><div class="note">'+esc(m.caption||'Mark-up')+'</div><div class="who"><span>'+esc(m.author||'')+' '+esc(HC.when(m.created))+'</span><button type="button" class="lnk bad" data-rmmark="'+esc(m.id)+'">Delete</button></div></div></div>').join('')+'</div>':'')+
+      '<ul class="ideas" data-list>'+mine.map(ideaLi).join('')+'</ul>'+
+      '<form class="ideas-form" data-form autocomplete="off" style="margin:10px 0 0"><textarea rows="2" placeholder="Add an idea for this spot. Enter posts it, Shift+Enter makes a new line." aria-label="Idea for this station" maxlength="2000"></textarea><div class="row"><button type="button" class="btn ghost sm" data-mark>Mark up this view</button>'+HC.pickerHtml('Add a photo')+'<span class="grow"></span><button type="submit" class="btn sm">Post</button><div class="status muted" aria-live="polite"></div></div></form></div></article>';
   }
   function renderPhotos(){
-    const list=photos.slice().sort(byDate);
-    // keep each mark-up right after the photo it was drawn on
-    const ordered=[]; list.filter(x=>!x.parent||!list.some(y=>y.id===x.parent)).forEach(x=>{ordered.push(x); list.filter(y=>y.parent===x.id).forEach(y=>ordered.push(y));});
-    const n=photos.filter(x=>x.kind==='photo').length; $('#photo-cnt').textContent=n?n+(n===1?' photo':' photos'):'';
-    $('#photo-grid').innerHTML=ordered.length?ordered.map(photoTile).join(''):'<div class="empty">No photos yet. Add the first one above.</div>';
+    const host=$('#stations'); if(host.querySelector('.idea-edit'))return;
+    const sts=stations();
+    $('#photo-cnt').textContent=sts.length?sts.length+(sts.length===1?' station':' stations')+(sts.filter(renderOf).length?', '+sts.filter(renderOf).length+' with a rendering':''):'';
+    host.innerHTML=sts.length?sts.map((st,i)=>stationHtml(st,i,sts.length)).join(''):'<div class="empty">No stations yet. Add the first photo above: a view of the spot as it is today.</div>';
+    host.querySelectorAll('.station').forEach(art=>{
+      const st=photos.find(x=>x.id===art.dataset.id); if(!st)return;
+      const stage=art.querySelector('[data-stage]'), wrap=stage.querySelector('.before-wrap'), handle=stage.querySelector('.handle'), rng=art.querySelector('input[type=range]'), bf=stage.querySelector('img.bf');
+      const fit=()=>{if(bf.naturalWidth)stage.style.aspectRatio=bf.naturalWidth+'/'+bf.naturalHeight;}; if(bf.complete)fit(); else bf.addEventListener('load',fit);
+      if(rng){
+        const set=v=>{v=Math.max(0,Math.min(100,v));wrap.style.clipPath='inset(0 '+(100-v)+'% 0 0)';handle.style.left=v+'%';rng.value=v;};
+        rng.addEventListener('input',()=>set(+rng.value));
+        let drag=false; const from=e=>{const b=stage.getBoundingClientRect();set((e.clientX-b.left)/b.width*100);};
+        stage.addEventListener('pointerdown',e=>{drag=true;stage.setPointerCapture(e.pointerId);from(e);});
+        stage.addEventListener('pointermove',e=>{if(drag)from(e);});
+        stage.addEventListener('pointerup',()=>drag=false); stage.addEventListener('pointercancel',()=>drag=false);
+      }
+      art.querySelector('[data-mk]').addEventListener('change',e=>{stage.classList.toggle('show-mk',e.target.checked); const t=stage.querySelector('.tag.l'); if(t)t.textContent=e.target.checked?'My markup':'Today';});
+      const form=art.querySelector('[data-form]'), ta=form.querySelector('textarea'), fst=form.querySelector('.status');
+      const picker=HC.wirePicker(form.querySelector('.photo-pick'),m=>HC.flash(fst,m,true));
+      ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+      form.addEventListener('submit',async e=>{
+        e.preventDefault(); const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo){HC.flash(fst,'Type an idea or attach a photo first.');return;}
+        form.querySelector('button[type=submit]').disabled=true; HC.flash(fst,'Posting...');
+        try{const d=await HC.api.post({action:'idea.add',project:id,station:st.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined}); ideas.push(d.idea); renderPhotos(); renderIdeas(true); art.scrollIntoView({block:'nearest'});}
+        catch(err){HC.flash(fst,err.message,true); form.querySelector('button[type=submit]').disabled=false;}
+      });
+      art.querySelector('[data-mark]').addEventListener('click',()=>{
+        const r=renderOf(st), c=parseCap(st,stations().indexOf(st));
+        HC.openMarkup({name:st.name,title:c.title,bases:r?[{label:'Concept',url:r.url},{label:'Today',url:st.url}]:[{label:'Today',url:st.url}],onPost:async res=>{
+          const d=await HC.api.post({action:'photo.add',project:id,photo:res.photo,caption:res.text,kind:'markup',parent:st.id}); photos.push(d.photo); renderPhotos();
+          const el=document.getElementById('st-'+st.id); if(el)el.scrollIntoView({block:'nearest'});
+        }});
+      });
+      art.querySelector('[data-render]').addEventListener('change',async e=>{
+        const f=e.target.files&&e.target.files[0]; if(!f)return; e.target.value='';
+        HC.flash(pst,'Uploading the rendering...');
+        try{const ph=await HC.shrink(f); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data},kind:'render',parent:st.id}); photos=photos.filter(x=>!(x.kind==='render'&&x.parent===st.id)); photos.push(d.photo); renderPhotos(); HC.flash(pst,'Rendering attached.'); setTimeout(()=>HC.flash(pst,''),3000);}
+        catch(err){HC.flash(pst,'Could not attach the rendering: '+err.message,true);}
+      });
+      const lab=art.querySelector('label.lnk'); lab.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lab.querySelector('input').click();}});
+      const rm=art.querySelector('[data-rmrender]'); if(rm)rm.addEventListener('click',async()=>{
+        const r=renderOf(st); if(!r||!HC.confirmDel('Remove the rendering from this station? The file goes to the Drive trash.'))return;
+        try{await HC.api.post({action:'photo.delete',id:r.id}); photos=photos.filter(x=>x.id!==r.id); renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
+      });
+      const cv=art.querySelector('[data-cover]'); if(cv)cv.addEventListener('click',async()=>{try{const d=await HC.api.post({action:'photo.cover',id:st.id}); P.cover=d.cover; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}});
+      art.querySelector('[data-text]').addEventListener('click',()=>{
+        const c=parseCap(st,stations().indexOf(st));
+        HC.modal({title:'Station text',body:
+          '<div class="two"><label class="f"><b>Title</b><input type="text" name="title" maxlength="120" value="'+esc(c.title)+'" placeholder="Off the concrete pad"></label><label class="f"><b>Seen from</b><input type="text" name="where" maxlength="120" value="'+esc(c.where)+'" placeholder="from the covered patio, at the house wall"></label></div>'+
+          '<label class="f"><b>What changes here</b><textarea name="text" rows="5" maxlength="1500">'+esc(c.text)+'</textarea></label>'+
+          '<label class="f"><b>Liberty taken</b><textarea name="liberty" rows="3" maxlength="800" placeholder="A judgement call the rendering makes, so it can be argued with.">'+esc(c.liberty)+'</textarea></label>',
+          onSubmit:async f=>{const d=await HC.api.post({action:'photo.edit',id:st.id,caption:joinCap({title:f.title.value,where:f.where.value,text:f.text.value,liberty:f.liberty.value})}); Object.assign(st,d.photo); renderPhotos();}});
+      });
+      const move=async dir=>{
+        const sts=stations(), i=sts.indexOf(st), j=i+dir; if(j<0||j>=sts.length)return;
+        HC.flash(pst,'Reordering...');
+        try{
+          const nums=sts.map((x,k)=>k+1); const tmp=nums[i]; nums[i]=nums[j]; nums[j]=tmp;
+          for(let k=0;k<sts.length;k++){ if(+sts[k].order!==nums[k]){ const d=await HC.api.post({action:'photo.edit',id:sts[k].id,order:nums[k]}); Object.assign(sts[k],d.photo); } }
+          renderPhotos(); HC.flash(pst,''); const el=document.getElementById('st-'+st.id); if(el)el.scrollIntoView({block:'nearest'});
+        }catch(err){HC.flash(pst,err.message,true);}
+      };
+      const up=art.querySelector('[data-up]'); if(up)up.addEventListener('click',()=>move(-1));
+      const dn=art.querySelector('[data-down]'); if(dn)dn.addEventListener('click',()=>move(1));
+      art.querySelector('[data-del]').addEventListener('click',async()=>{
+        if(!HC.confirmDel('Remove this station? The photo, its rendering and its mark-ups go to the Drive trash. Ideas posted under it are kept with the general ideas.'))return;
+        try{const d=await HC.api.post({action:'photo.delete',id:st.id}); photos=photos.filter(x=>x.id!==st.id&&x.parent!==st.id); P.cover=d.cover||''; ideas.forEach(x=>{if(x.station===st.id)x.station='';}); renderPhotos(); renderIdeas(true);}catch(err){HC.flash(pst,err.message,true);}
+      });
+      art.querySelectorAll('[data-rmmark]').forEach(b=>b.addEventListener('click',async()=>{
+        if(!HC.confirmDel('Delete this mark-up?'))return;
+        try{await HC.api.post({action:'photo.delete',id:b.dataset.rmmark}); photos=photos.filter(x=>x.id!==b.dataset.rmmark); renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
+      }));
+    });
   }
   async function addPhotos(fileList){
     const fs=Array.from(fileList||[]).filter(f=>/^image\//.test(f.type)||/\.(heic|heif|jpe?g|png|webp)$/i.test(f.name));
     if(!fs.length){HC.flash(pst,'No images in that selection.',true);return;}
+    let next=stations().reduce((m,x)=>Math.max(m,ordOf(x)===1e9?0:ordOf(x)),0);
     for(let i=0;i<fs.length;i++){
       HC.flash(pst,'Uploading '+(i+1)+' of '+fs.length+': '+fs[i].name+'...');
-      try{const ph=await HC.shrink(fs[i]); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data}}); photos.push(d.photo); if(d.cover)P.cover=d.cover; renderPhotos();}
+      try{const ph=await HC.shrink(fs[i]); const d=await HC.api.post({action:'photo.add',project:id,photo:{name:ph.name,type:ph.type,data:ph.data},order:++next}); photos.push(d.photo); if(d.cover)P.cover=d.cover; renderPhotos();}
       catch(err){HC.flash(pst,'Could not upload '+fs[i].name+': '+err.message,true);return;}
     }
-    HC.flash(pst,fs.length+(fs.length===1?' photo added.':' photos added.')); setTimeout(()=>HC.flash(pst,''),3000);
+    HC.flash(pst,fs.length+(fs.length===1?' station added.':' stations added.')); setTimeout(()=>HC.flash(pst,''),3000);
   }
   drop.querySelector('input').addEventListener('change',e=>{addPhotos(e.target.files);e.target.value='';});
   drop.querySelector('label').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();drop.querySelector('input').click();}});
   ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
   ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
   drop.addEventListener('drop',e=>addPhotos(e.dataTransfer.files));
-  $('#photo-grid').addEventListener('click',async e=>{
-    const tile=e.target.closest('.ph'); if(!tile)return;
-    const x=photos.find(p=>p.id===tile.dataset.id); if(!x)return;
-    if(e.target.closest('[data-del]')){
-      if(!HC.confirmDel('Delete this '+(x.kind==='markup'?'mark-up':x.kind==='render'?'rendering':'photo, its rendering and its mark-ups')+'? The file goes to the Drive trash.'))return;
-      try{const d=await HC.api.post({action:'photo.delete',id:x.id}); photos=photos.filter(p=>p.id!==x.id&&p.parent!==x.id); P.cover=d.cover||''; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
-    }else if(e.target.closest('[data-cover]')){
-      try{const d=await HC.api.post({action:'photo.cover',id:x.id}); P.cover=d.cover; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
-    }else if(e.target.closest('[data-mark]')){
-      HC.openMarkup({url:x.url,name:x.name,title:x.caption||x.name,onPost:async r=>{
-        const d=await HC.api.post({action:'photo.add',project:id,photo:r.photo,caption:r.text,kind:'markup',parent:x.kind==='markup'&&x.parent?x.parent:x.id});
-        photos.push(d.photo); renderPhotos(); tile.scrollIntoView({block:'nearest'});
-      }});
-    }else if(e.target.closest('[data-cap]')&&!tile.querySelector('textarea')){
-      const cap=tile.querySelector('[data-cap]');
-      cap.outerHTML='<form class="idea-edit" data-capform><textarea rows="2" maxlength="2000" aria-label="Caption">'+esc(x.caption)+'</textarea><div class="row"><button type="submit" class="btn sm">Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button></div></form>';
-      const f=tile.querySelector('[data-capform]'), ta=f.querySelector('textarea'); ta.focus();
-      f.querySelector('[data-cancel]').addEventListener('click',renderPhotos);
-      ta.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();f.requestSubmit();}});
-      f.addEventListener('submit',async ev=>{ev.preventDefault(); try{const d=await HC.api.post({action:'photo.edit',id:x.id,caption:ta.value}); Object.assign(x,d.photo); renderPhotos();}catch(err){HC.flash(pst,err.message,true);}});
-    }
-  });
 
   // ----- ideas -----
   const iform=$('#idea-form'), ist=iform.querySelector('.status');
@@ -242,8 +334,8 @@
   const ipick=HC.wirePicker(iform.querySelector('.photo-pick'),m=>HC.flash(ist,m,true));
   const ideaPhoto=x=>x.photo?'<a class="idea-photo" href="'+esc(x.photo)+'" data-lb data-cap="'+esc(x.text.slice(0,120))+'">'+HC.img(x.photo,400,'Photo attached to this idea')+'</a>':'';
   function renderIdeas(force){
-    const list=$('#idea-list'); if(!force&&list.querySelector('.idea-edit'))return;
-    const mine=ideas.slice().sort(byDate);
+    const list=$('#idea-list'); if(!force&&document.querySelector('.idea-edit'))return;
+    const mine=ideas.filter(x=>!x.station||!photos.some(p=>p.id===x.station)).sort(byDate);
     $('#idea-cnt').textContent=mine.length?mine.length+(mine.length===1?' idea':' ideas'):'';
     list.innerHTML=mine.length?mine.map(x=>'<li data-id="'+esc(x.id)+'"><div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; '+esc(HC.when(x.created))+(x.updated&&x.updated!==x.created?' &middot; edited':'')+(x.title?' &middot; '+esc(x.title):'')+'</div>'+(x.text?'<p class="idea-text">'+esc(x.text)+'</p>':'')+ideaPhoto(x)+'<div class="row"><button type="button" class="lnk" data-edit>Edit</button></div></li>').join(''):'<li class="empty">No ideas yet.</li>';
   }
@@ -256,25 +348,25 @@
     catch(err){HC.flash(ist,err.message,true);}
     iform.querySelector('button[type=submit]').disabled=false;
   });
-  $('#idea-list').addEventListener('click',e=>{
-    const b=e.target.closest('[data-edit]'); if(!b)return;
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.ideas [data-edit]'); if(!b)return;
     const li=b.closest('li'), x=ideas.find(i=>i.id===li.dataset.id); if(!x)return;
     li.innerHTML='<div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; editing</div><div class="idea-edit"><textarea rows="3" aria-label="Edit idea">'+esc(x.text)+'</textarea>'+(x.photo?'<div class="photo-cur">'+ideaPhoto(x)+' <button type="button" class="lnk" data-rmphoto>Remove photo</button></div>':'')+HC.pickerHtml(x.photo?'Replace photo':'Add a photo')+'<div class="row"><button type="button" class="btn sm" data-save>Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button><button type="button" class="lnk bad" data-del>Delete</button><span class="status muted" style="flex-basis:auto"></span></div></div>';
     const ta=li.querySelector('textarea'), st=li.querySelector('.status'); ta.focus(); let removePhoto=false;
     const rm=li.querySelector('[data-rmphoto]'); if(rm)rm.addEventListener('click',()=>{removePhoto=true;li.querySelector('.photo-cur').remove();});
     const picker=HC.wirePicker(li.querySelector('.photo-pick'),m=>HC.flash(st,m,true));
     ta.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();li.querySelector('[data-save]').click();}});
-    li.querySelector('[data-cancel]').addEventListener('click',()=>renderIdeas(true));
+    const both=()=>{renderIdeas(true);renderPhotos();}; li.querySelector('[data-cancel]').addEventListener('click',both);
     li.querySelector('[data-save]').addEventListener('click',async()=>{
       const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo&&(removePhoto||!x.photo)){HC.flash(st,'Empty. Use Delete to remove it.');return;}
       li.querySelectorAll('button').forEach(b=>b.disabled=true); HC.flash(st,'Saving...');
-      try{const d=await HC.api.post({action:'idea.edit',id:x.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined,removePhoto}); if(d.deleted)ideas=ideas.filter(i=>i!==x); else Object.assign(x,d.idea); renderIdeas(true);}
+      try{const d=await HC.api.post({action:'idea.edit',id:x.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined,removePhoto}); if(d.deleted)ideas=ideas.filter(i=>i!==x); else Object.assign(x,d.idea); both();}
       catch(err){HC.flash(st,err.message,true); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
     });
     li.querySelector('[data-del]').addEventListener('click',async()=>{
       if(!HC.confirmDel('Delete this idea for everyone?'))return;
       li.querySelectorAll('button').forEach(b=>b.disabled=true); HC.flash(st,'Deleting...');
-      try{await HC.api.post({action:'idea.delete',id:x.id}); ideas=ideas.filter(i=>i!==x); renderIdeas(true);}
+      try{await HC.api.post({action:'idea.delete',id:x.id}); ideas=ideas.filter(i=>i!==x); both();}
       catch(err){HC.flash(st,err.message,true); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
     });
   });
@@ -330,7 +422,7 @@
     try{
       const d=await HC.api.get({action:'project',id});
       P=d.project; tasks=d.tasks; photos=d.photos; ideas=d.ideas; files=d.files;
-      renderHead(); renderTasks(); renderPhotos(); renderIdeas(); renderFiles(); if(!quiet)HC.flash(hst,'');
+      renderHead(); renderNotes(); renderTasks(); renderPhotos(); renderIdeas(); renderFiles(); if(!quiet)HC.flash(hst,'');
       if(HC.C.DRIVE_URL){const a=$('#folder-link'); a.href=HC.C.DRIVE_URL; a.style.display='';}
     }catch(err){ if(!P){$('#name').textContent='Could not open this project'; $('#summary').innerHTML=esc(err.message)+'. <a href="index.html">Back to all projects</a>';} else HC.flash(hst,'Refresh failed: '+err.message,true); }
   }

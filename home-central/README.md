@@ -60,22 +60,22 @@ To add a person, add the lowercase name to `USERS` in both files and a button on
 
 - **Status**: click a step (Idea, Pending, Upcoming, In progress, Done, Nixed). Home Central groups projects by it; nixed ones collapse to the bottom.
 - **Tasks**: add with an optional due date and person; tick to complete; click the text to edit. Overdue tasks turn red, the card on the home page shows progress and the next due date.
-- **Photos**: Add photos or drop them on the box; each is shrunk to 1600 px in the browser before upload. The first photo becomes the cover; Set as cover changes it. **Mark up** opens the drawing tool: one colour per call-out, say what each colour means, and the drawing is saved as a mark-up next to the original with those notes as its caption. Click a caption to edit it; click a photo to see it full size.
-- **Ideas**: a shared board with optional photos, editable by anyone signed in.
+- **The walk**: photos as stations with renderings, mark-ups and ideas per spot (see below). The first photo becomes the cover; Set as cover changes it.
+- **Other ideas**: a shared board for the project as a whole, with optional photos, editable by anyone signed in.
 - **Files**: upload PDFs or anything up to 15 MB each with a kind, a note and an amount. Quotes, and invoices plus receipts, are totalled against the budget.
 - **Edit details**: name, summary, budget, dates, tags and the concept page link (for a project that has its own design page, like the patio concept). Delete project is in there too.
 
-## The concept sheet
+## The walk
 
-Every project also has `concept.html?id=...` (the **Concept sheet** link on its page and on its card), built on the patio concept page's walk-through:
+The project page works like the patio concept page. Every photo is a **station**, in walking order (the arrows move one earlier or later; the order is kept in the sheet):
 
-- **Stations** are the project's photos, in walking order (the arrows move them; the order is kept in the sheet). The first line of a photo's caption is the station title, the rest is its note. Add a station here or add photos on the project page; they are the same photos.
-- **Renderings**: attach an image to a station and it becomes a before/after slider, today on the left and the concept on the right. A station keeps one rendering; attaching another replaces it. On the project page a rendering shows next to its photo with a Rendering tag.
-- **Mark up this view** opens the drawing tool with a Concept/Today switch when the station has a rendering. The drawing is saved as a mark-up under that station with the colour notes.
-- **Ideas for this spot** sit under each station; ideas posted on the project page show at the bottom as general ideas.
-- **Materials and notes**: Edit notes takes plain text. A blank line starts a paragraph, lines starting with `- ` make a list, and the build sequence is numbered one line per step.
+- **Today / Concept slider**: attach a rendering to a station and it becomes a before/after slider, today on the left and the concept on the right. A station keeps one rendering; attaching another replaces it.
+- **my markup**: tick it to see the latest drawing on that view in the left half instead of the photo.
+- **Edit text**: a title, where the view is from, what changes here, and a "liberty taken" note for the judgement call the rendering makes. (In the sheet this is one caption: `Title | seen from`, the note, a blank line, the liberty.)
+- **Ideas for this spot** sit under each station with a Post box; **Mark up this view** draws on the concept or the photo, one colour per call-out, and saves the drawing as a mark-up under that station with the colour notes. Ideas posted on the page's Other ideas box are about the project as a whole.
+- **Materials and notes** at the top: Edit notes takes plain text. A blank line starts a paragraph, lines starting with `- ` make a list, a line before a list is its heading, and the build sequence is numbered one line per step.
 
-The patio project was loaded this way: its nine stations, their renderings and the materials, details and build sequence from the original concept page.
+The patio project was loaded this way: nine stations with the concept page's text, their renderings, the original scribbles as mark-ups, and the materials, details and build sequence.
 
 ## Local preview
 
