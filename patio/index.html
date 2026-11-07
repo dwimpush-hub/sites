@@ -117,6 +117,21 @@ section:first-of-type{border-top:0}
 .ideas-status.err{color:#B3261E}
 .idea-edit{display:grid;gap:8px;margin-top:4px}
 .idea-edit .ideas-row{justify-content:flex-start}
+/* photos on ideas */
+.idea-photo{display:inline-block;margin:6px 0 2px;border:1px solid var(--line);background:var(--paper);padding:3px;line-height:0;cursor:zoom-in}
+.idea-photo img{display:block;width:150px;height:110px;object-fit:cover}
+.photo-pick{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.photo-pick input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.photo-pick .btn.ghost{font-size:14px;padding:8px 14px;min-height:40px}
+.photo-pick .pv{display:none;align-items:center;gap:8px}
+.photo-pick .pv.on{display:flex}
+.photo-pick .pv img{width:64px;height:48px;object-fit:cover;border:1px solid var(--line);background:var(--paper);padding:2px}
+#lightbox{position:fixed;inset:0;z-index:50;background:rgba(10,8,6,.9);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:16px}
+#lightbox.on{display:flex}
+#lightbox img{max-width:min(96vw,1600px);max-height:84vh;object-fit:contain;background:#000;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#lightbox .lb-bar{display:flex;gap:18px;align-items:center;color:#fff;font-size:14px}
+#lightbox .lb-bar a{color:#fff}
+#lightbox .lb-close{position:absolute;top:10px;right:14px;background:none;border:0;color:#fff;font-size:34px;line-height:1;cursor:pointer;padding:6px 10px}
 @media (max-width:640px){.ideas{padding:12px 12px 14px}.station{padding-block:22px}.cmp-bar{font-size:15px}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
@@ -153,7 +168,7 @@ section:first-of-type{border-top:0}
 <section id="walk">
   <div class="eyebrow">The walk</div>
   <h2>Nine stations, house to gate</h2>
-  <p>Drag the handle to compare. Tick &ldquo;my markup&rdquo; to see your scribble in the left half instead of the original photo. Things sitting on a zone in the photo (the hose reel, hoses, pots) are painted over by the new surface; everything else is untouched. Each station has an ideas box underneath it: what you post lands in the shared sheet, and anyone with the link can read and edit the ideas.</p>
+  <p>Drag the handle to compare. Tick &ldquo;my markup&rdquo; to see your scribble in the left half instead of the original photo. Things sitting on a zone in the photo (the hose reel, hoses, pots) are painted over by the new surface; everything else is untouched. Each station has an ideas box underneath it: what you post lands in the shared sheet, and anyone with the link can read and edit the ideas. Attach a photo (a marked-up screenshot works well) and it is kept in Drive with a link in the sheet; tap a thumbnail to see it full size.</p>
   <div id="stations"></div>
 </section>
 
@@ -281,6 +296,11 @@ const STATIONS = [
         <ul class="ideas-list" id="list-${s.key}"></ul>
         <form class="ideas-form" id="form-${s.key}" autocomplete="off">
           <textarea rows="2" placeholder="Add an idea for this spot. Enter posts it, Shift+Enter makes a new line." aria-label="Your idea for ${s.title}"></textarea>
+          <div class="photo-pick">
+            <label class="btn ghost" tabindex="0">Add a photo<input type="file" accept="image/*" aria-label="Attach a photo, for example a marked-up screenshot"></label>
+            <span class="pv"><img alt=""><span class="pv-name"></span><button type="button" class="lnk" data-clear>remove</button></span>
+            <span class="pv-hint">Mark up a photo on your phone first, then attach it here.</span>
+          </div>
           <div class="ideas-row">
             <input class="who" type="text" placeholder="Your name (optional)" maxlength="80" aria-label="Your name">
             <button class="btn" type="submit">Enter</button>
@@ -302,7 +322,7 @@ const STATIONS = [
 })();
 
 // ---- ideas board: one shared Google Sheet behind an Apps Script web app (see apps-script/Code.gs)
-const IDEAS_API = '';
+const IDEAS_API = 'https://script.google.com/macros/s/AKfycby7SkkCrl1YcS7mJMk1Wg3DniPJHIu8AzrV_-T7SBtEuxTlAD9wYJ9d0dZ_WNPHwpzXdQ/exec';
 const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5gQ9KWZNy7bZbzg6NKrTbG33RQ/edit';
 (function(){
   const NAME_KEY='patio-ideas-name';
@@ -311,6 +331,59 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
   const when=iso=>{const d=new Date(iso);if(isNaN(d))return '';return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});};
   const myName=()=>{try{return localStorage.getItem(NAME_KEY)||''}catch(e){return ''}};
   const saveName=n=>{try{localStorage.setItem(NAME_KEY,n)}catch(e){}};
+  // Drive photo links: the sheet keeps https://drive.google.com/file/d/ID/view, thumbnails come from Drive's thumbnailer
+  const driveId=u=>{const m=String(u||'').match(/\/d\/([\w-]+)/);return m?m[1]:'';};
+  const thumbUrl=(u,w)=>'https://drive.google.com/thumbnail?id='+driveId(u)+'&sz=w'+w;
+  const photoHtml=x=>x.photo&&driveId(x.photo)?`<a class="idea-photo" href="${esc(x.photo)}" data-lb target="_blank" rel="noopener"><img src="${thumbUrl(x.photo,400)}" alt="Photo attached to this idea" loading="lazy" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/${driveId(x.photo)}=w400'"></a>`:'';
+  // pick a photo: shrink it in the browser to 1600 px on the long edge so posts stay small
+  function shrink(file){
+    return new Promise((res,rej)=>{
+      const url=URL.createObjectURL(file), im=new Image();
+      im.onload=()=>{
+        URL.revokeObjectURL(url);
+        const k=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight));
+        const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*k); c.height=Math.round(im.naturalHeight*k);
+        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        const d=c.toDataURL('image/jpeg',0.86);
+        res({name:file.name||'photo.jpg',type:'image/jpeg',data:d.slice(d.indexOf(',')+1),preview:d});
+      };
+      im.onerror=()=>{ // browser cannot decode it (HEIC on desktop): send the file as it is
+        URL.revokeObjectURL(url);
+        if(file.size>9*1024*1024)return rej(new Error('photo is too large, use a JPEG or PNG under 9 MB'));
+        const fr=new FileReader(); fr.onload=()=>res({name:file.name,type:file.type||'image/jpeg',data:String(fr.result).split(',')[1],preview:''}); fr.onerror=()=>rej(new Error('could not read the file')); fr.readAsDataURL(file);
+      };
+      im.src=url;
+    });
+  }
+  function wirePicker(root,onChange){ // returns ()=>pending photo
+    const inp=root.querySelector('input[type=file]'), pv=root.querySelector('.pv'), img=pv.querySelector('img'), nm=pv.querySelector('.pv-name'), hint=root.querySelector('.pv-hint');
+    let pending=null;
+    const show=()=>{pv.classList.toggle('on',!!pending); if(hint)hint.style.display=pending?'none':''; if(pending){img.src=pending.preview||''; img.style.display=pending.preview?'':'none'; nm.textContent=pending.name;}};
+    inp.addEventListener('change',async()=>{
+      const f=inp.files&&inp.files[0]; if(!f)return;
+      nm.textContent='Reading photo...'; pv.classList.add('on');
+      try{pending=await shrink(f);}catch(e){pending=null; if(onChange)onChange(e.message);}
+      inp.value=''; show();
+    });
+    root.querySelector('[data-clear]').addEventListener('click',()=>{pending=null;show();});
+    root.querySelector('label').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();inp.click();}});
+    return {get:()=>pending,clear:()=>{pending=null;show();}};
+  }
+  // lightbox
+  const lb=document.createElement('div'); lb.id='lightbox'; lb.setAttribute('role','dialog'); lb.setAttribute('aria-label','Photo');
+  lb.innerHTML='<button type="button" class="lb-close" aria-label="Close">&times;</button><img alt="Attached photo, full size"><div class="lb-bar"><span class="lb-who"></span><a target="_blank" rel="noopener">Open in Drive</a></div>';
+  document.body.appendChild(lb);
+  const lbClose=()=>{lb.classList.remove('on'); lb.querySelector('img').src='';};
+  lb.addEventListener('click',e=>{if(e.target===lb||e.target.classList.contains('lb-close'))lbClose();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&lb.classList.contains('on'))lbClose();});
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('a[data-lb]'); if(!a)return;
+    e.preventDefault();
+    const li=a.closest('li'), who=li?li.querySelector('.idea-meta'):null;
+    const im=lb.querySelector('img'); im.src=thumbUrl(a.href,2000);
+    im.onerror=()=>{im.onerror=null; im.src='https://lh3.googleusercontent.com/d/'+driveId(a.href)+'=w2000';};
+    lb.querySelector('.lb-who').textContent=who?who.textContent:''; lb.querySelector('.lb-bar a').href=a.href; lb.classList.add('on');
+  });
   async function api(body){
     const opt=body?{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'text/plain;charset=utf-8'}}:{method:'GET'};
     opt.redirect='follow';
@@ -329,7 +402,7 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
     if(!mine.length){list.innerHTML='<li class="ideas-empty">No ideas yet for this spot. Be the first.</li>';return;}
     list.innerHTML=mine.map(x=>`<li data-id="${esc(x.id)}">
       <div class="idea-meta"><b>${esc(x.author||'Someone')}</b> &middot; ${when(x.created)}${x.updated&&x.updated!==x.created?' &middot; edited':''}</div>
-      <p class="idea-text">${esc(x.text)}</p>
+      ${x.text?`<p class="idea-text">${esc(x.text)}</p>`:''}${photoHtml(x)}
       <div class="idea-actions"><button type="button" class="lnk" data-edit>Edit</button></div>
     </li>`).join('');
     list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>edit(key,b.closest('li'))));
@@ -339,14 +412,19 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
     const id=li.dataset.id, x=ideas.find(i=>i.id===id); if(!x)return;
     li.innerHTML=`<div class="idea-meta"><b>${esc(x.author||'Someone')}</b> &middot; editing</div>
       <div class="idea-edit"><textarea rows="3" aria-label="Edit idea">${esc(x.text)}</textarea>
+      ${x.photo?`<div class="photo-cur">${photoHtml(x)} <button type="button" class="lnk" data-rmphoto>Remove photo</button></div>`:''}
+      <div class="photo-pick"><label class="btn ghost" tabindex="0">${x.photo?'Replace photo':'Add a photo'}<input type="file" accept="image/*" aria-label="Attach a photo"></label><span class="pv"><img alt=""><span class="pv-name"></span><button type="button" class="lnk" data-clear>remove</button></span></div>
       <div class="ideas-row"><button type="button" class="btn" data-save>Save</button><button type="button" class="btn ghost" data-cancel>Cancel</button><button type="button" class="lnk" data-del>Delete</button><span class="ideas-status muted" aria-live="polite"></span></div></div>`;
     const ta=li.querySelector('textarea'), st=li.querySelector('.ideas-status'); ta.focus();
+    let removePhoto=false; const rm=li.querySelector('[data-rmphoto]');
+    if(rm)rm.addEventListener('click',()=>{removePhoto=true; li.querySelector('.photo-cur').remove();});
+    const picker=wirePicker(li.querySelector('.photo-pick'),m=>{st.textContent=m;st.classList.add('err');});
     ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();li.querySelector('[data-save]').click();}});
     li.querySelector('[data-cancel]').addEventListener('click',()=>render(key,true));
     li.querySelector('[data-save]').addEventListener('click',async()=>{
-      const text=ta.value.trim(); if(!text){st.textContent='Empty. Use Delete to remove it.';return;}
-      li.querySelectorAll('button').forEach(b=>b.disabled=true); st.textContent='Saving...';
-      try{const d=await api({action:'edit',id,text,author:myName()}); x.text=text; x.updated=d.updated||new Date().toISOString(); render(key,true);}
+      const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo&&(removePhoto||!x.photo)){st.textContent='Empty. Use Delete to remove it.';return;}
+      li.querySelectorAll('button').forEach(b=>b.disabled=true); st.textContent=photo?'Saving photo...':'Saving...';
+      try{const d=await api({action:'edit',id,text,author:myName(),photo:photo||undefined,removePhoto}); x.text=text; x.photo=d.photo||''; x.updated=d.updated||new Date().toISOString(); render(key,true);}
       catch(e){st.textContent='Could not save: '+e.message; st.classList.add('err'); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
     });
     li.querySelector('[data-del]').addEventListener('click',async()=>{
@@ -369,15 +447,16 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
   function STATUS_ALL(msg,err){STATIONS.forEach(s=>status(s.key,msg,err));}
   STATIONS.forEach(s=>{
     const form=document.getElementById('form-'+s.key); if(!form)return;
-    const ta=form.querySelector('textarea'), who=form.querySelector('.who'), btn=form.querySelector('button');
+    const ta=form.querySelector('textarea'), who=form.querySelector('.who'), btn=form.querySelector('button[type=submit]');
     who.value=myName();
+    const picker=wirePicker(form.querySelector('.photo-pick'),m=>status(s.key,m,true));
     ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
     form.addEventListener('submit',async e=>{
       e.preventDefault();
-      const text=ta.value.trim(); if(!text){status(s.key,'Type an idea first.');ta.focus();return;}
+      const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo){status(s.key,'Type an idea or attach a photo first.');ta.focus();return;}
       const author=who.value.trim(); saveName(author);
-      btn.disabled=true; status(s.key,'Posting...');
-      try{const d=await api({action:'add',station:s.key,title:s.title,author,text}); ideas.push(d.idea); ta.value=''; render(s.key,true); status(s.key,'Posted.'); setTimeout(()=>status(s.key,''),2500);}
+      btn.disabled=true; status(s.key,photo?'Posting with photo...':'Posting...');
+      try{const d=await api({action:'add',station:s.key,title:s.title,author,text,photo:photo||undefined}); ideas.push(d.idea); ta.value=''; picker.clear(); render(s.key,true); status(s.key,'Posted.'); setTimeout(()=>status(s.key,''),2500);}
       catch(err){status(s.key,'Could not post: '+err.message,true);}
       btn.disabled=false;
     });

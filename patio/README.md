@@ -15,4 +15,6 @@ Every station has an ideas box. Posts go to a Google Sheet through an Apps Scrip
 2. Deploy > New deployment > type Web app. Execute as: Me. Who has access: Anyone. Deploy, and authorize when asked.
 3. Copy the web app URL into `IDEAS_API` near the bottom of `patio-concept.html`, run `python3 tools/build.py`, commit and push.
 
-Anyone who can open the page can post and edit ideas; nothing on the page can read anything in your Google account except that one sheet. Changing the script later needs a new deployment version (Deploy > Manage deployments > edit > new version).
+Ideas can carry a photo (a marked-up screenshot, say). The page shrinks it to 1600 px in the browser, the script saves it to the Drive folder "Patio ideas photos" shared view-only by link, and the sheet row holds the Drive link. Tapping a thumbnail under a station opens it full size.
+
+Anyone who can open the page can post and edit ideas; nothing on the page can read anything in your Google account except that one sheet and that one folder. Changing the script later needs a new deployment version (Deploy > Manage deployments > edit > new version). If the new code touches something it did not before (as the photo folder did), pick `authorize` next to Run in the editor, run it once and accept the permission prompt, or posts fail with "You do not have permission".

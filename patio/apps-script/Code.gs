@@ -1,9 +1,14 @@
 // Ideas board for the patio concept page.
 // Bound to the "Patio notes ideas" sheet. Deploy as a web app (Execute as: Me, Who has access: Anyone)
 // and paste the web-app URL into IDEAS_API at the top of the page script.
+// Photos attached to ideas are saved in the Drive folder PHOTO_FOLDER (shared view-only by link)
+// and the sheet row holds the Drive link.
 
 const SHEET_ID = '13W_AXk0vm_Z_QYbDb5gQ9KWZNy7bZbzg6NKrTbG33RQ';
-const HEAD = ['id', 'station', 'title', 'author', 'text', 'created', 'updated'];
+const PHOTO_FOLDER = 'Patio ideas photos';
+const HEAD = ['id', 'station', 'title', 'author', 'text', 'created', 'updated', 'photo'];
+const COL = { author: 4, text: 5, updated: 7, photo: 8 };
+const MAX_PHOTO_B64 = 12 * 1024 * 1024; // 12 MB of base64, about 9 MB of image
 
 function sheet_() {
   const sh = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
@@ -11,8 +16,52 @@ function sheet_() {
     sh.appendRow(HEAD);
     sh.setFrozenRows(1);
     sh.getRange(1, 1, 1, HEAD.length).setFontWeight('bold');
+  } else if (sh.getLastColumn() < HEAD.length) {
+    // older header without the photo column: add the missing titles
+    const from = sh.getLastColumn();
+    sh.getRange(1, from + 1, 1, HEAD.length - from).setValues([HEAD.slice(from)]).setFontWeight('bold');
   }
   return sh;
+}
+
+function folder_() {
+  const it = DriveApp.getFoldersByName(PHOTO_FOLDER);
+  if (it.hasNext()) return it.next();
+  const f = DriveApp.createFolder(PHOTO_FOLDER);
+  f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return f;
+}
+
+function fileId_(url) {
+  const m = String(url || '').match(/\/d\/([\w-]+)/);
+  return m ? m[1] : '';
+}
+
+function savePhoto_(photo, station) {
+  if (!photo || !photo.data) return '';
+  const type = String(photo.type || 'image/jpeg');
+  if (type.indexOf('image/') !== 0) throw new Error('not an image');
+  if (photo.data.length > MAX_PHOTO_B64) throw new Error('photo too large');
+  const ext = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
+  const stamp = Utilities.formatDate(new Date(), 'America/Chicago', 'yyyyMMdd-HHmmss');
+  const base = String(photo.name || 'photo').replace(/\.[^.]+$/, '').replace(/[^\w-]+/g, '_').slice(0, 40) || 'photo';
+  const name = station + '-' + stamp + '-' + base + '.' + ext;
+  const blob = Utilities.newBlob(Utilities.base64Decode(photo.data), type, name);
+  const file = folder_().createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return 'https://drive.google.com/file/d/' + file.getId() + '/view';
+}
+
+function trashPhoto_(url) {
+  const id = fileId_(url);
+  if (!id) return;
+  try { DriveApp.getFileById(id).setTrashed(true); } catch (e) { /* already gone */ }
+}
+
+// Run this once from the editor after pasting new code so the script gets its Drive permission.
+function authorize() {
+  folder_();
+  sheet_();
 }
 
 function iso_(v) {
@@ -26,7 +75,7 @@ function all_() {
     const r = rows[i];
     if (!r[0]) continue;
     out.push({ id: String(r[0]), station: String(r[1]), title: String(r[2]), author: String(r[3]),
-               text: String(r[4]), created: iso_(r[5]), updated: iso_(r[6]) });
+               text: String(r[4]), created: iso_(r[5]), updated: iso_(r[6]), photo: String(r[7] || '') });
   }
   return out;
 }
@@ -41,7 +90,7 @@ function doGet(e) {
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+  lock.waitLock(20000);
   try {
     const body = JSON.parse((e.postData && e.postData.contents) || '{}');
     const sh = sheet_();
@@ -49,12 +98,13 @@ function doPost(e) {
     const text = String(body.text || '').trim().slice(0, 2000);
     const author = String(body.author || '').trim().slice(0, 80);
     if (body.action === 'add') {
-      if (!text) return out_({ ok: false, error: 'empty' });
+      if (!text && !(body.photo && body.photo.data)) return out_({ ok: false, error: 'empty' });
       const id = Utilities.getUuid();
-      const station = String(body.station || '');
+      const station = String(body.station || '').replace(/[^\w-]+/g, '').slice(0, 40);
       const title = String(body.title || '').slice(0, 120);
-      sh.appendRow([id, station, title, author, text, now, now]);
-      return out_({ ok: true, idea: { id, station, title, author, text, created: now.toISOString(), updated: now.toISOString() } });
+      const photo = savePhoto_(body.photo, station || 'idea');
+      sh.appendRow([id, station, title, author, text, now, now, photo]);
+      return out_({ ok: true, idea: { id, station, title, author, text, created: now.toISOString(), updated: now.toISOString(), photo } });
     }
     if (body.action === 'edit' || body.action === 'delete') {
       const n = Math.max(sh.getLastRow() - 1, 1);
@@ -62,11 +112,22 @@ function doPost(e) {
       for (let i = 0; i < ids.length; i++) {
         if (String(ids[i][0]) !== String(body.id)) continue;
         const row = i + 2;
-        if (body.action === 'delete' || !text) { sh.deleteRow(row); return out_({ ok: true, deleted: String(body.id) }); }
-        sh.getRange(row, 5).setValue(text);
-        if (author) sh.getRange(row, 4).setValue(author);
-        sh.getRange(row, 7).setValue(now);
-        return out_({ ok: true, updated: now.toISOString() });
+        const oldPhoto = String(sh.getRange(row, COL.photo).getValue() || '');
+        let photo = oldPhoto;
+        if (body.action === 'edit') {
+          if (body.photo && body.photo.data) photo = savePhoto_(body.photo, String(ids[i][0]).slice(0, 8));
+          else if (body.removePhoto) photo = '';
+        }
+        if (body.action === 'delete' || (!text && !photo)) {
+          sh.deleteRow(row);
+          trashPhoto_(oldPhoto);
+          return out_({ ok: true, deleted: String(body.id) });
+        }
+        if (photo !== oldPhoto) { trashPhoto_(oldPhoto); sh.getRange(row, COL.photo).setValue(photo); }
+        sh.getRange(row, COL.text).setValue(text);
+        if (author) sh.getRange(row, COL.author).setValue(author);
+        sh.getRange(row, COL.updated).setValue(now);
+        return out_({ ok: true, updated: now.toISOString(), photo });
       }
       return out_({ ok: false, error: 'not found' });
     }
