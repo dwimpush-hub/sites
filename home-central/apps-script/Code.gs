@@ -479,14 +479,15 @@ function doPost(e) {
     if (a === 'idea.edit') {
       const i = get_('Ideas', id);
       if (!i) return out_({ ok: false, error: 'idea not found' });
-      const text = str_(body.text, 2000);
+      const text = body.text === undefined ? i.text : str_(body.text, 2000);
       let photo = i.photo;
       if (body.photo && body.photo.data) photo = saveBlob_(projectFolder_(get_('Projects', i.project) || { name: 'project' }), body.photo, true).url;
       else if (body.removePhoto) photo = '';
       if (!text && !photo) { del_('Ideas', id); trash_(i.photo); return out_({ ok: true, deleted: id }); }
       if (photo !== i.photo) trash_(i.photo);
-      const patch = { text: text, photo: photo, updated: now };
-      if (who) patch.author = who;
+      const patch = { updated: now };
+      if (text !== i.text || photo !== i.photo) { patch.text = text; patch.photo = photo; if (who) patch.author = who; } // a move keeps the author
+      if (body.station !== undefined) patch.station = str_(body.station, 80);   // '' = about the project as a whole
       patch_('Ideas', id, patch);
       return out_({ ok: true, idea: get_('Ideas', id) });
     }

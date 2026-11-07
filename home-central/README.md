@@ -72,7 +72,7 @@ The project page works like the patio concept page. Every photo is a **station**
 - **Today / Concept slider**: attach a rendering to a station and it becomes a before/after slider, today on the left and the concept on the right. A station keeps one rendering; attaching another replaces it.
 - **my markup**: tick it to see the latest drawing on that view in the left half instead of the photo.
 - **Edit text**: a title, where the view is from, what changes here, and a "liberty taken" note for the judgement call the rendering makes. (In the sheet this is one caption: `Title | seen from`, the note, a blank line, the liberty.)
-- **Ideas for this spot** sit under each station with a Post box; **Mark up this view** draws on the concept or the photo, one colour per call-out, and saves the drawing as a mark-up under that station with the colour notes. Ideas posted on the page's Other ideas box are about the project as a whole.
+- **Ideas for this spot** sit under each station with a Post box; **Mark up this view** draws on the concept or the photo, one colour per call-out, and saves the drawing as a mark-up under that station with the colour notes. Ideas posted on the page's Other ideas box are about the project as a whole; Edit on any idea has a Spot picker to move it under a station or back out.
 - **Materials and notes** at the top: Edit notes takes plain text. A blank line starts a paragraph, lines starting with `- ` make a list, a line before a list is its heading, and the build sequence is numbered one line per step.
 
 The patio project was loaded this way: nine stations with the concept page's text, their renderings, the original scribbles as mark-ups, and the materials, details and build sequence.

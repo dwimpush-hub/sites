@@ -357,7 +357,7 @@
   document.addEventListener('click',e=>{
     const b=e.target.closest('.ideas [data-edit]'); if(!b)return;
     const li=b.closest('li'), x=ideas.find(i=>i.id===li.dataset.id); if(!x)return;
-    li.innerHTML='<div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; editing</div><div class="idea-edit"><textarea rows="3" aria-label="Edit idea">'+esc(x.text)+'</textarea>'+(x.photo?'<div class="photo-cur">'+ideaPhoto(x)+' <button type="button" class="lnk" data-rmphoto>Remove photo</button></div>':'')+HC.pickerHtml(x.photo?'Replace photo':'Add a photo')+'<div class="row"><button type="button" class="btn sm" data-save>Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button><button type="button" class="lnk bad" data-del>Delete</button><span class="status muted" style="flex-basis:auto"></span></div></div>';
+    li.innerHTML='<div class="idea-meta"><b>'+esc(x.author||'Someone')+'</b> &middot; editing</div><div class="idea-edit"><textarea rows="3" aria-label="Edit idea">'+esc(x.text)+'</textarea>'+(x.photo?'<div class="photo-cur">'+ideaPhoto(x)+' <button type="button" class="lnk" data-rmphoto>Remove photo</button></div>':'')+HC.pickerHtml(x.photo?'Replace photo':'Add a photo')+'<label class="f" style="margin-top:8px"><b>Spot</b><select name="station" aria-label="Which station this idea is about"><option value="">The project as a whole</option>'+stations().map((st,i)=>'<option value="'+esc(st.id)+'" '+(x.station===st.id?'selected':'')+'>Station '+(i+1)+': '+esc(parseCap(st,i).title)+'</option>').join('')+'</select></label><div class="row"><button type="button" class="btn sm" data-save>Save</button><button type="button" class="btn ghost sm" data-cancel>Cancel</button><button type="button" class="lnk bad" data-del>Delete</button><span class="status muted" style="flex-basis:auto"></span></div></div>';
     const ta=li.querySelector('textarea'), st=li.querySelector('.status'); ta.focus(); let removePhoto=false;
     const rm=li.querySelector('[data-rmphoto]'); if(rm)rm.addEventListener('click',()=>{removePhoto=true;li.querySelector('.photo-cur').remove();});
     const picker=HC.wirePicker(li.querySelector('.photo-pick'),m=>HC.flash(st,m,true));
@@ -366,7 +366,7 @@
     li.querySelector('[data-save]').addEventListener('click',async()=>{
       const text=ta.value.trim(), photo=picker.get(); if(!text&&!photo&&(removePhoto||!x.photo)){HC.flash(st,'Empty. Use Delete to remove it.');return;}
       li.querySelectorAll('button').forEach(b=>b.disabled=true); HC.flash(st,'Saving...');
-      try{const d=await HC.api.post({action:'idea.edit',id:x.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined,removePhoto}); if(d.deleted)ideas=ideas.filter(i=>i!==x); else Object.assign(x,d.idea); both();}
+      try{const d=await HC.api.post({action:'idea.edit',id:x.id,text,photo:photo?{name:photo.name,type:photo.type,data:photo.data}:undefined,removePhoto,station:li.querySelector('select[name=station]').value}); if(d.deleted)ideas=ideas.filter(i=>i!==x); else Object.assign(x,d.idea); both(); const el=d.idea&&d.idea.station?document.getElementById('st-'+d.idea.station):null; if(el)el.scrollIntoView({block:'nearest'});}
       catch(err){HC.flash(st,err.message,true); li.querySelectorAll('button').forEach(b=>b.disabled=false);}
     });
     li.querySelector('[data-del]').addEventListener('click',async()=>{
