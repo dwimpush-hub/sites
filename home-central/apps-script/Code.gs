@@ -23,16 +23,16 @@ const PASS_HASH = 'f4e17aa8bb9331c734643455a8fc0c9b03211c0fa340e47c56b86377cc531
 const USERS = ['dave', 'nate', 'cissy'];
 
 const TABS = {
-  Projects: ['id', 'name', 'status', 'summary', 'budget', 'start', 'target', 'cover', 'page', 'tags', 'created', 'updated'],
-  Ideas:    ['id', 'project', 'title', 'author', 'text', 'photo', 'created', 'updated'],
-  Photos:   ['id', 'project', 'name', 'url', 'caption', 'kind', 'parent', 'author', 'created'],
+  Projects: ['id', 'name', 'status', 'summary', 'budget', 'start', 'target', 'cover', 'page', 'tags', 'created', 'updated', 'materials', 'details', 'sequence'],
+  Ideas:    ['id', 'project', 'title', 'author', 'text', 'photo', 'created', 'updated', 'station'],
+  Photos:   ['id', 'project', 'name', 'url', 'caption', 'kind', 'parent', 'author', 'created', 'order'],
   Files:    ['id', 'project', 'name', 'url', 'kind', 'note', 'amount', 'author', 'created'],
   Tasks:    ['id', 'project', 'text', 'done', 'due', 'assignee', 'author', 'created', 'completed'],
   Log:      ['when', 'who', 'project', 'action', 'detail']
 };
 // Columns that are not plain text (everything else is formatted as text so "3/4 bath" never turns into a date).
 const DATES = { created: 1, updated: 1, completed: 1, when: 1 };
-const NUMBERS = { budget: 1, amount: 1 };
+const NUMBERS = { budget: 1, amount: 1, order: 1 };
 const BOOLS = { done: 1 };
 const STATUSES = ['idea', 'pending', 'upcoming', 'active', 'done', 'nixed'];
 const CHILD_TABS = ['Ideas', 'Photos', 'Files', 'Tasks'];
@@ -84,8 +84,14 @@ function tab_(name) {
       else col.setNumberFormat('@');
     });
   } else if (sh.getLastColumn() < head.length) {
+    // the script grew new columns since the tab was made: add the titles and format them like the others
     const from = sh.getLastColumn();
     sh.getRange(1, from + 1, 1, head.length - from).setValues([head.slice(from)]).setFontWeight('bold');
+    const rows = Math.max(sh.getMaxRows() - 1, 1);
+    for (let i = from; i < head.length; i++) {
+      const col = sh.getRange(2, i + 1, rows, 1);
+      if (NUMBERS[head[i]]) col.setNumberFormat('#,##0.##'); else col.setNumberFormat('@');
+    }
   }
   return sh;
 }
@@ -211,7 +217,7 @@ function counts_(all) {
     if (t.done) bump(t.project, 'tasksDone');
     else if (t.due && (!c.nextDue || t.due < c.nextDue)) c.nextDue = t.due;
   });
-  all.Photos.forEach(function (x) { bump(x.project, 'photos'); });
+  all.Photos.forEach(function (x) { if (x.kind === 'photo') bump(x.project, 'photos'); }); // renders and mark-ups ride on a photo
   all.Ideas.forEach(function (x) { bump(x.project, 'ideas'); });
   all.Files.forEach(function (x) { bump(x.project, 'files'); });
   return by;
@@ -325,6 +331,9 @@ function doPost(e) {
       if (body.page !== undefined) patch.page = str_(body.page, 500);
       if (body.tags !== undefined) patch.tags = str_(body.tags, 200);
       if (body.cover !== undefined) patch.cover = str_(body.cover, 500);
+      if (body.materials !== undefined) patch.materials = str_(body.materials, 4000);
+      if (body.details !== undefined) patch.details = str_(body.details, 4000);
+      if (body.sequence !== undefined) patch.sequence = str_(body.sequence, 4000);
       if (patch.name && patch.name !== p.name) { try { projectFolder_(p).setName(safeName_(patch.name)); } catch (err) { /* folder rename is best effort */ } }
       patch_('Projects', id, patch);
       log_(who, id, a, Object.keys(patch).filter(function (k) { return k !== 'updated'; }).join(','));
@@ -379,7 +388,10 @@ function doPost(e) {
       if (!p) return out_({ ok: false, error: 'project not found' });
       const saved = saveBlob_(projectFolder_(p), body.photo, true);
       const x = { id: Utilities.getUuid(), project: p.id, name: saved.name, url: saved.url, caption: str_(body.caption, 2000),
-                  kind: kind_(body.kind, 'photo'), parent: str_(body.parent, 80), author: who, created: now };
+                  kind: kind_(body.kind, 'photo'), parent: str_(body.parent, 80), author: who, created: now, order: num_(body.order) };
+      if (x.kind === 'render' && x.parent) {
+        rows_('Photos').filter(function (y) { return y.parent === x.parent && y.kind === 'render'; }).forEach(function (y) { del_('Photos', y.id); trash_(y.url); });
+      }
       add_('Photos', x);
       if (!p.cover && x.kind === 'photo') patch_('Projects', p.id, { cover: x.url, updated: now });
       log_(who, p.id, a, x.kind + ' ' + x.name);
@@ -391,6 +403,7 @@ function doPost(e) {
       if (!x) return out_({ ok: false, error: 'photo not found' });
       const patch = {};
       if (body.caption !== undefined) patch.caption = str_(body.caption, 2000);
+      if (body.order !== undefined) patch.order = num_(body.order);
       patch_('Photos', id, patch);
       return out_({ ok: true, photo: get_('Photos', id) });
     }
@@ -405,7 +418,7 @@ function doPost(e) {
       const x = get_('Photos', id);
       if (!x) return out_({ ok: false, error: 'photo not found' });
       del_('Photos', id);
-      delWhere_('Photos', 'parent', id); // its mark-ups go with it (their files stay in Drive)
+      rows_('Photos').filter(function (y) { return y.parent === id; }).forEach(function (y) { del_('Photos', y.id); trash_(y.url); }); // its render and mark-ups go with it
       trash_(x.url);
       const p = get_('Projects', x.project);
       let cover = p ? p.cover : '';
@@ -457,7 +470,7 @@ function doPost(e) {
       const text = str_(body.text, 2000);
       if (!text && !(body.photo && body.photo.data)) return out_({ ok: false, error: 'empty' });
       const photo = (body.photo && body.photo.data) ? saveBlob_(projectFolder_(p), body.photo, true).url : '';
-      const i = { id: Utilities.getUuid(), project: p.id, title: str_(body.title, 120), author: who, text: text, photo: photo, created: now, updated: now };
+      const i = { id: Utilities.getUuid(), project: p.id, title: str_(body.title, 120), author: who, text: text, photo: photo, created: now, updated: now, station: str_(body.station, 80) };
       add_('Ideas', i);
       log_(who, p.id, a, text.slice(0, 80));
       i.created = i.updated = now.toISOString();

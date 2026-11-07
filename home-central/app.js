@@ -81,7 +81,7 @@ window.HC = (function () {
     function counts(s, pid) {
       const c = { tasks: 0, tasksDone: 0, photos: 0, ideas: 0, files: 0, nextDue: '' };
       s.Tasks.filter(t => t.project === pid).forEach(t => { c.tasks++; if (t.done) c.tasksDone++; else if (t.due && (!c.nextDue || t.due < c.nextDue)) c.nextDue = t.due; });
-      c.photos = s.Photos.filter(x => x.project === pid).length; c.ideas = s.Ideas.filter(x => x.project === pid).length; c.files = s.Files.filter(x => x.project === pid).length;
+      c.photos = s.Photos.filter(x => x.project === pid && x.kind === 'photo').length; c.ideas = s.Ideas.filter(x => x.project === pid).length; c.files = s.Files.filter(x => x.project === pid).length;
       return c;
     }
     const find = (s, tab, id) => s[tab].find(x => x.id === id);
@@ -100,19 +100,19 @@ window.HC = (function () {
       const st = (v, f) => STATUS[v] ? v : (f || 'idea');
       let r;
       if (a === 'project.add') { const name = str(b.name, 120); if (!name) throw new Error('a project needs a name'); const p = { id: uuid(), name, status: st(b.status), summary: str(b.summary, 2000), budget: num(b.budget), start: ymd(b.start), target: ymd(b.target), cover: '', page: str(b.page), tags: str(b.tags, 200), created: t, updated: t }; s.Projects.push(p); r = { project: Object.assign({}, p, { counts: counts(s, p.id) }) }; }
-      else if (a === 'project.edit') { const p = need(s, 'Projects', b.id); if (b.name !== undefined) { const n = str(b.name, 120); if (!n) throw new Error('a project needs a name'); p.name = n; } if (b.status !== undefined) p.status = st(b.status, p.status); if (b.summary !== undefined) p.summary = str(b.summary, 2000); if (b.budget !== undefined) p.budget = num(b.budget); if (b.start !== undefined) p.start = ymd(b.start); if (b.target !== undefined) p.target = ymd(b.target); if (b.page !== undefined) p.page = str(b.page); if (b.tags !== undefined) p.tags = str(b.tags, 200); if (b.cover !== undefined) p.cover = b.cover; p.updated = t; r = { project: Object.assign({}, p, { counts: counts(s, p.id) }) }; }
+      else if (a === 'project.edit') { const p = need(s, 'Projects', b.id); if (b.name !== undefined) { const n = str(b.name, 120); if (!n) throw new Error('a project needs a name'); p.name = n; } if (b.status !== undefined) p.status = st(b.status, p.status); if (b.summary !== undefined) p.summary = str(b.summary, 2000); if (b.budget !== undefined) p.budget = num(b.budget); if (b.start !== undefined) p.start = ymd(b.start); if (b.target !== undefined) p.target = ymd(b.target); if (b.page !== undefined) p.page = str(b.page); if (b.tags !== undefined) p.tags = str(b.tags, 200); if (b.cover !== undefined) p.cover = b.cover; ['materials', 'details', 'sequence'].forEach(k => { if (b[k] !== undefined) p[k] = str(b[k], 4000); }); p.updated = t; r = { project: Object.assign({}, p, { counts: counts(s, p.id) }) }; }
       else if (a === 'project.delete') { need(s, 'Projects', b.id); ['Ideas', 'Photos', 'Files', 'Tasks'].forEach(k => { s[k] = s[k].filter(x => x.project !== b.id); }); drop(s, 'Projects', b.id); r = { deleted: b.id }; }
       else if (a === 'task.add') { const p = need(s, 'Projects', b.project); const text = str(b.text); if (!text) throw new Error('empty task'); const x = { id: uuid(), project: p.id, text, done: false, due: ymd(b.due), assignee: str(b.assignee, 80), author: who, created: t, completed: '' }; s.Tasks.push(x); r = { task: x }; }
       else if (a === 'task.edit' || a === 'task.toggle') { const x = need(s, 'Tasks', b.id); if (a === 'task.toggle') b.done = !x.done; if (b.text !== undefined) { const tx = str(b.text); if (!tx) throw new Error('empty task'); x.text = tx; } if (b.due !== undefined) x.due = ymd(b.due); if (b.assignee !== undefined) x.assignee = str(b.assignee, 80); if (b.done !== undefined) { x.done = !!b.done; x.completed = b.done ? t : ''; } r = { task: x }; }
       else if (a === 'task.delete') { need(s, 'Tasks', b.id); drop(s, 'Tasks', b.id); r = { deleted: b.id }; }
-      else if (a === 'photo.add') { const p = need(s, 'Projects', b.project); if (!b.photo || !b.photo.data) throw new Error('no file data'); const x = { id: uuid(), project: p.id, name: b.photo.name || 'photo.jpg', url: dataUrl(b.photo), caption: str(b.caption, 2000), kind: str(b.kind, 40) || 'photo', parent: str(b.parent, 80), author: who, created: t }; s.Photos.push(x); if (!p.cover && x.kind === 'photo') p.cover = x.url; r = { photo: x, cover: p.cover }; }
-      else if (a === 'photo.edit') { const x = need(s, 'Photos', b.id); if (b.caption !== undefined) x.caption = str(b.caption, 2000); r = { photo: x }; }
+      else if (a === 'photo.add') { const p = need(s, 'Projects', b.project); if (!b.photo || !b.photo.data) throw new Error('no file data'); const x = { id: uuid(), project: p.id, name: b.photo.name || 'photo.jpg', url: dataUrl(b.photo), caption: str(b.caption, 2000), kind: str(b.kind, 40) || 'photo', parent: str(b.parent, 80), author: who, created: t, order: num(b.order) }; if (x.kind === 'render' && x.parent) s.Photos = s.Photos.filter(y => !(y.parent === x.parent && y.kind === 'render')); s.Photos.push(x); if (!p.cover && x.kind === 'photo') p.cover = x.url; r = { photo: x, cover: p.cover }; }
+      else if (a === 'photo.edit') { const x = need(s, 'Photos', b.id); if (b.caption !== undefined) x.caption = str(b.caption, 2000); if (b.order !== undefined) x.order = num(b.order); r = { photo: x }; }
       else if (a === 'photo.cover') { const x = need(s, 'Photos', b.id); need(s, 'Projects', x.project).cover = x.url; r = { cover: x.url }; }
       else if (a === 'photo.delete') { const x = need(s, 'Photos', b.id); drop(s, 'Photos', b.id); s.Photos = s.Photos.filter(y => y.parent !== b.id); const p = find(s, 'Projects', x.project); let cover = p ? p.cover : ''; if (p && p.cover === x.url) { const rest = s.Photos.filter(y => y.project === p.id && y.kind === 'photo'); cover = p.cover = rest.length ? rest[0].url : ''; } r = { deleted: b.id, cover }; }
       else if (a === 'file.add') { const p = need(s, 'Projects', b.project); if (!b.file || !b.file.data) throw new Error('no file data'); const x = { id: uuid(), project: p.id, name: b.file.name || 'file', url: dataUrl(b.file), kind: str(b.kind, 40) || 'Other', note: str(b.note, 1000), amount: num(b.amount), author: who, created: t }; s.Files.push(x); r = { file: x }; }
       else if (a === 'file.edit') { const x = need(s, 'Files', b.id); if (b.kind !== undefined) x.kind = str(b.kind, 40) || 'Other'; if (b.note !== undefined) x.note = str(b.note, 1000); if (b.amount !== undefined) x.amount = num(b.amount); if (b.name !== undefined && str(b.name, 120)) x.name = str(b.name, 120); r = { file: x }; }
       else if (a === 'file.delete') { need(s, 'Files', b.id); drop(s, 'Files', b.id); r = { deleted: b.id }; }
-      else if (a === 'idea.add') { const p = need(s, 'Projects', b.project); const text = str(b.text, 2000); if (!text && !(b.photo && b.photo.data)) throw new Error('empty'); const x = { id: uuid(), project: p.id, title: str(b.title, 120), author: who, text, photo: b.photo && b.photo.data ? dataUrl(b.photo) : '', created: t, updated: t }; s.Ideas.push(x); r = { idea: x }; }
+      else if (a === 'idea.add') { const p = need(s, 'Projects', b.project); const text = str(b.text, 2000); if (!text && !(b.photo && b.photo.data)) throw new Error('empty'); const x = { id: uuid(), project: p.id, title: str(b.title, 120), author: who, text, photo: b.photo && b.photo.data ? dataUrl(b.photo) : '', created: t, updated: t, station: str(b.station, 80) }; s.Ideas.push(x); r = { idea: x }; }
       else if (a === 'idea.edit') { const x = need(s, 'Ideas', b.id); const text = str(b.text, 2000); let photo = x.photo; if (b.photo && b.photo.data) photo = dataUrl(b.photo); else if (b.removePhoto) photo = ''; if (!text && !photo) { drop(s, 'Ideas', b.id); r = { deleted: b.id }; } else { x.text = text; x.photo = photo; x.author = who; x.updated = t; r = { idea: x }; } }
       else if (a === 'idea.delete') { need(s, 'Ideas', b.id); drop(s, 'Ideas', b.id); r = { deleted: b.id }; }
       else throw new Error('unknown action ' + a);
@@ -222,7 +222,7 @@ window.HC = (function () {
   // ---------- mark-up tool: draw on a photo, one colour per call-out, say what each colour means ----------
   const PAL = [{ c: '#E53935', n: 'Red' }, { c: '#FB8C00', n: 'Orange' }, { c: '#FDD835', n: 'Yellow' }, { c: '#43A047', n: 'Green' }, { c: '#1E88E5', n: 'Blue' }, { c: '#8E24AA', n: 'Purple' }, { c: '#F06292', n: 'Pink' }, { c: '#FFFFFF', n: 'White' }, { c: '#111111', n: 'Black' }];
   const SIZES = [{ k: 'thin', px: 4, dot: 6 }, { k: 'medium', px: 9, dot: 11 }, { k: 'thick', px: 18, dot: 18 }];
-  let mk = null, cur = null, drawing = null, baseImg = null;
+  let mk = null, cur = null, drawing = null, baseImgs = [];
   const colName = c => (PAL.find(p => p.c === c) || { n: c }).n;
   function loadImg(src, cors) { return new Promise((res, rej) => { const im = new Image(); if (cors) { im.crossOrigin = 'anonymous'; im.referrerPolicy = 'no-referrer'; } im.onload = () => res(im); im.onerror = () => rej(new Error('image did not load')); im.src = src; }); }
   async function loadDrawable(url) {
@@ -236,7 +236,7 @@ window.HC = (function () {
       '<p class="mk-guide">Pick a colour and draw round one thing. Pick a new colour for the next one, then say what each colour means below. The drawing is saved as a mark-up next to the original photo.</p>' +
       '<div class="mk-tools"><div class="mk-pal" role="radiogroup" aria-label="Colour">' + PAL.map(p => '<button type="button" class="mk-sw" data-c="' + p.c + '" style="background:' + p.c + '" title="' + p.n + '" aria-label="' + p.n + '"></button>').join('') + '</div>' +
       '<div class="mk-sizes" aria-label="Brush size">' + SIZES.map(z => '<button type="button" data-size="' + z.k + '" title="' + z.k + '" aria-label="' + z.k + ' brush"><i style="width:' + z.dot + 'px;height:' + z.dot + 'px"></i></button>').join('') + '</div>' +
-      '<span class="sp"></span><button type="button" class="lnk" data-undo>Undo</button><button type="button" class="lnk" data-clear>Clear</button></div>' +
+      '<div class="mk-base"></div><span class="sp"></span><button type="button" class="lnk" data-undo>Undo</button><button type="button" class="lnk" data-clear>Clear</button></div>' +
       '<div class="mk-stage"><canvas aria-label="Drawing surface"></canvas></div>' +
       '<div class="mk-notes"><span class="eyebrow">What each colour calls out</span><div class="mk-rows"><div class="mk-empty">Nothing drawn yet.</div></div></div>' +
       '<textarea rows="2" placeholder="Anything else about this photo? (optional)" aria-label="General note"></textarea>' +
@@ -244,7 +244,8 @@ window.HC = (function () {
     document.body.appendChild(mk);
     const cv = mk.querySelector('canvas'), cx = cv.getContext('2d'), rows = mk.querySelector('.mk-rows'), st = mk.querySelector('.status');
     const paintStroke = (ctx, s) => { ctx.strokeStyle = s.c; ctx.lineWidth = s.w; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = 0.9; ctx.beginPath(); s.p.forEach((pt, i) => i ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1])); if (s.p.length === 1) ctx.lineTo(s.p[0][0] + 0.1, s.p[0][1]); ctx.stroke(); ctx.globalAlpha = 1; };
-    const paintAll = (ctx, W, H) => { ctx.clearRect(0, 0, W, H); if (baseImg) ctx.drawImage(baseImg, 0, 0, W, H); cur.strokes.forEach(s => paintStroke(ctx, s)); };
+    const paintAll = (ctx, W, H) => { ctx.clearRect(0, 0, W, H); const bi = baseImgs[cur.base] || baseImgs[0]; if (bi) ctx.drawImage(bi, 0, 0, W, H); cur.strokes.forEach(s => paintStroke(ctx, s)); };
+    const syncBase = () => mk.querySelectorAll('[data-base]').forEach(b => b.classList.toggle('on', +b.dataset.base === cur.base));
     const redraw = () => paintAll(cx, cv.width, cv.height);
     const used = () => { const seen = []; cur.strokes.forEach(s => { if (!seen.includes(s.c)) seen.push(s.c); }); return seen; };
     function sync() {
@@ -264,10 +265,11 @@ window.HC = (function () {
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && mk.classList.contains('on')) close(); });
     mk.querySelector('.mk-pal').addEventListener('click', e => { const b = e.target.closest('.mk-sw'); if (!b) return; cur.c = b.dataset.c; sync(); });
     mk.querySelector('.mk-sizes').addEventListener('click', e => { const b = e.target.closest('[data-size]'); if (!b) return; cur.size = b.dataset.size; sync(); });
+    mk.querySelector('.mk-base').addEventListener('click', e => { const b = e.target.closest('[data-base]'); if (!b) return; cur.base = +b.dataset.base; redraw(); syncBase(); });
     mk.querySelector('[data-undo]').addEventListener('click', () => { cur.strokes.pop(); redraw(); sync(); });
     mk.querySelector('[data-clear]').addEventListener('click', () => { if (cur.strokes.length && !confirmDel('Clear the whole drawing?')) return; cur.strokes = []; redraw(); sync(); });
     const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };
-    cv.addEventListener('pointerdown', e => { if (!cur || !baseImg) return; e.preventDefault(); cv.setPointerCapture(e.pointerId); const z = SIZES.find(z => z.k === cur.size) || SIZES[1]; drawing = { c: cur.c, w: z.px * cv.width / 1200, p: [pos(e)] }; cur.strokes.push(drawing); paintStroke(cx, drawing); });
+    cv.addEventListener('pointerdown', e => { if (!cur || !baseImgs.length) return; e.preventDefault(); cv.setPointerCapture(e.pointerId); const z = SIZES.find(z => z.k === cur.size) || SIZES[1]; drawing = { c: cur.c, w: z.px * cv.width / 1200, p: [pos(e)] }; cur.strokes.push(drawing); paintStroke(cx, drawing); });
     cv.addEventListener('pointermove', e => { if (!drawing) return; e.preventDefault(); const pt = pos(e), last = drawing.p[drawing.p.length - 1]; if (Math.hypot(pt[0] - last[0], pt[1] - last[1]) < 1.5) return; drawing.p.push(pt); cx.strokeStyle = drawing.c; cx.lineWidth = drawing.w; cx.lineCap = 'round'; cx.lineJoin = 'round'; cx.globalAlpha = 0.9; cx.beginPath(); cx.moveTo(last[0], last[1]); cx.lineTo(pt[0], pt[1]); cx.stroke(); cx.globalAlpha = 1; });
     const end = () => { if (!drawing) return; drawing = null; redraw(); sync(); };
     cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
@@ -286,15 +288,18 @@ window.HC = (function () {
       mk.querySelectorAll('button').forEach(b => b.disabled = false);
     });
     mk._open = async function (o) {
-      cur = { name: o.name || 'photo.jpg', strokes: [], notes: {}, c: PAL[0].c, size: 'medium', onPost: o.onPost };
+      const bases = o.bases || [{ label: 'Photo', url: o.url }];
+      cur = { name: o.name || 'photo.jpg', strokes: [], notes: {}, c: PAL[0].c, size: 'medium', base: 0, onPost: o.onPost };
       mk.querySelector('#mk-title').textContent = 'Mark up: ' + (o.title || o.name || 'photo');
-      st.textContent = 'Loading image...'; st.classList.remove('err'); baseImg = null;
+      mk.querySelector('.mk-base').innerHTML = bases.length > 1 ? bases.map((b, i) => '<button type="button" data-base="' + i + '" class="' + (i ? '' : 'on') + '">' + esc(b.label) + '</button>').join('') : '';
+      st.textContent = 'Loading image...'; st.classList.remove('err'); baseImgs = [];
       mk.classList.add('on'); document.body.style.overflow = 'hidden';
       cv.width = 1200; cv.height = 900; redraw(); sync();
       try {
-        baseImg = await loadDrawable(o.url);
-        const k = Math.min(1, 1600 / Math.max(baseImg.naturalWidth, baseImg.naturalHeight));
-        cv.width = Math.round(baseImg.naturalWidth * k); cv.height = Math.round(baseImg.naturalHeight * k);
+        const first = await loadDrawable(bases[0].url); baseImgs[0] = first;
+        const k = Math.min(1, 1600 / Math.max(first.naturalWidth, first.naturalHeight));
+        cv.width = Math.round(first.naturalWidth * k); cv.height = Math.round(first.naturalHeight * k);
+        bases.slice(1).forEach((b, i) => loadDrawable(b.url).then(im => { baseImgs[i + 1] = im; if (cur && cur.base === i + 1) redraw(); }).catch(() => { }));
         st.textContent = '';
       } catch (e) { st.textContent = 'Could not load the image: ' + e.message; st.classList.add('err'); }
       redraw(); sync();
@@ -318,8 +323,23 @@ window.HC = (function () {
   }
   const progress = c => c && c.tasks ? Math.round(100 * c.tasksDone / c.tasks) : 0;
   const pill = s => '<span class="pill ' + esc(s) + '">' + esc((STATUS[s] || { label: s }).label) + '</span>';
+  // plain text to HTML: blank lines split blocks; lines starting with "- " make a list (a block can mix plain lines
+  // and a list, so "Edges\n- steel\n- stone" is a line then a list); ordered=true numbers every line instead
+  function rich(text, ordered) {
+    const blocks = String(text || '').replace(/\r/g, '').trim().split(/\n\s*\n/).filter(Boolean);
+    if (ordered) { const items = blocks.join('\n').split('\n').map(l => l.replace(/^\s*(\d+[.)]|[-*])\s*/, '').trim()).filter(Boolean); return items.length ? '<ol class="seq">' + items.map(l => '<li>' + esc(l) + '</li>').join('') + '</ol>' : ''; }
+    const isLi = l => /^\s*[-*]\s/.test(l);
+    return blocks.map(b => {
+      const lines = b.split('\n').filter(l => l.trim()), out = []; let i = 0;
+      while (i < lines.length) {
+        if (isLi(lines[i])) { const li = []; while (i < lines.length && isLi(lines[i])) li.push(lines[i++].replace(/^\s*[-*]\s*/, '')); out.push('<ul>' + li.map(l => '<li>' + esc(l) + '</li>').join('') + '</ul>'); }
+        else { const pl = []; while (i < lines.length && !isLi(lines[i])) pl.push(lines[i++]); out.push('<p' + (lines.length > pl.length ? ' class="lead"' : '') + '>' + pl.map(esc).join('<br>') + '</p>'); }
+      }
+      return out.join('');
+    }).join('');
+  }
   const fileExt = n => { const m = String(n || '').match(/\.([a-z0-9]{1,5})$/i); return m ? m[1].toLowerCase() : 'file'; };
 
   return { C, api, esc, cap, when, day, today, money, STATUS, FILE_KINDS, USERS, PASS_HASH, session, setSession, sha256, requireLogin, signOut, user,
-           driveId, isData, thumb, alt, img, shrink, readAny, wirePicker, pickerHtml, lightbox, modal, confirmDel, openMarkup, flash, topbar, progress, pill, fileExt };
+           driveId, isData, thumb, alt, img, shrink, readAny, wirePicker, pickerHtml, lightbox, modal, confirmDel, openMarkup, flash, topbar, progress, pill, fileExt, rich };
 })();

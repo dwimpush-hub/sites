@@ -19,11 +19,11 @@ The script creates a spreadsheet called **Home Central** with one tab per kind o
 
 | Tab | Holds |
 | --- | --- |
-| Projects | id, name, status (idea, pending, upcoming, active, done, nixed), summary, budget, start, target, cover photo, concept page URL, tags |
+| Projects | id, name, status (idea, pending, upcoming, active, done, nixed), summary, budget, start, target, cover photo, concept page URL, tags, and the concept-sheet notes (materials, details, build sequence) |
 | Tasks | text, done (a checkbox you can also tick in the sheet), due date, who, when it was completed |
-| Photos | the Drive link, caption, kind (photo or markup), and for a mark-up the photo it was drawn on |
+| Photos | the Drive link, caption, kind (photo, render or markup), the parent photo for a render or mark-up, and the station order on the concept sheet |
 | Files | the Drive link, kind (Contract, Quote, Invoice, Schedule, Plan, Permit, Receipt, Other), note, amount |
-| Ideas | text, author, optional photo |
+| Ideas | text, author, optional photo, and the station (photo id) it was posted under on the concept sheet |
 | Log | who did what, when (every write appends a line) |
 
 Drive gets a folder **Home Central** holding the spreadsheet and `projects/<project name>/` for each project: photos and mark-ups go straight in that folder, documents go in its `files/` subfolder. Renaming a project renames the folder. Deleting a project removes its rows and sends the folder to the Drive trash.
@@ -64,6 +64,18 @@ To add a person, add the lowercase name to `USERS` in both files and a button on
 - **Ideas**: a shared board with optional photos, editable by anyone signed in.
 - **Files**: upload PDFs or anything up to 15 MB each with a kind, a note and an amount. Quotes, and invoices plus receipts, are totalled against the budget.
 - **Edit details**: name, summary, budget, dates, tags and the concept page link (for a project that has its own design page, like the patio concept). Delete project is in there too.
+
+## The concept sheet
+
+Every project also has `concept.html?id=...` (the **Concept sheet** link on its page and on its card), built on the patio concept page's walk-through:
+
+- **Stations** are the project's photos, in walking order (the arrows move them; the order is kept in the sheet). The first line of a photo's caption is the station title, the rest is its note. Add a station here or add photos on the project page; they are the same photos.
+- **Renderings**: attach an image to a station and it becomes a before/after slider, today on the left and the concept on the right. A station keeps one rendering; attaching another replaces it. On the project page a rendering shows next to its photo with a Rendering tag.
+- **Mark up this view** opens the drawing tool with a Concept/Today switch when the station has a rendering. The drawing is saved as a mark-up under that station with the colour notes.
+- **Ideas for this spot** sit under each station; ideas posted on the project page show at the bottom as general ideas.
+- **Materials and notes**: Edit notes takes plain text. A blank line starts a paragraph, lines starting with `- ` make a list, and the build sequence is numbered one line per step.
+
+The patio project was loaded this way: its nine stations, their renderings and the materials, details and build sequence from the original concept page.
 
 ## Local preview
 

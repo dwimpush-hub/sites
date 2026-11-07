@@ -25,7 +25,7 @@
   </div>
   <div class="meta-grid" id="mg"></div>
   <div class="timeline" id="tl" style="display:none"></div>
-  <nav class="subnav"><a href="#tasks">Tasks</a><a href="#photos">Photos</a><a href="#ideas">Ideas</a><a href="#files">Files</a></nav>
+  <nav class="subnav"><a href="#tasks">Tasks</a><a href="#photos">Photos</a><a href="#ideas">Ideas</a><a href="#files">Files</a><a id="concept-link" href="#" style="color:var(--gold)">Concept sheet &rarr;</a></nav>
 </div>
 
 <section id="tasks">
@@ -47,7 +47,7 @@
   <div class="sec-head"><h2>Photos and mark-ups</h2><span class="cnt" id="photo-cnt"></span></div>
   <div class="drop" id="photo-drop">
     <label class="btn gold" tabindex="0">Add photos<input type="file" accept="image/*" multiple aria-label="Add photos"></label>
-    <span class="small muted">or drop photos here. Each one is shrunk to 1600 px and saved to the project folder in Drive. Use Mark up on any photo to draw on it and say what each colour means.</span>
+    <span class="small muted">or drop photos here. Each one is shrunk to 1600 px and saved to the project folder in Drive. Use Mark up on any photo to draw on it and say what each colour means. Every photo is also a station on the project's concept sheet, where a rendering can be attached to it.</span>
     <div class="status muted" aria-live="polite" id="photo-st"></div>
   </div>
   <div class="photos" id="photo-grid"></div>
@@ -97,7 +97,7 @@
     document.title=P.name+' - Home Central';
     $('#name').textContent=P.name; $('#summary').textContent=P.summary||'';
     $('#meta').innerHTML=HC.pill(P.status)+'<br>'+(P.created?'added '+esc(HC.day(P.created.slice(0,10))):'')+(P.updated?'<br>updated '+esc(HC.when(P.updated)):'');
-    $('#controls').style.display='';
+    $('#controls').style.display=''; $('#concept-link').href='concept.html?id='+encodeURIComponent(id);
     $('#steps').innerHTML=Object.keys(HC.STATUS).map((s,i)=>(i===4?'<span class="gap"></span>':'')+'<button type="button" data-s="'+s+'" class="'+(P.status===s?'on':'')+'" title="'+esc(HC.STATUS[s].hint)+'">'+esc(HC.STATUS[s].label)+'</button>').join('');
     const mg=[];
     if(P.budget!==''&&P.budget!=null)mg.push(['Budget',HC.money(P.budget)]);
@@ -185,16 +185,17 @@
   const pst=$('#photo-st'), drop=$('#photo-drop');
   function photoTile(x){
     const isCover=P.cover&&P.cover===x.url, parent=x.parent?photos.find(y=>y.id===x.parent):null;
-    return '<div class="ph '+(x.kind==='markup'?'markup':'')+'" data-id="'+esc(x.id)+'"><a class="img" href="'+esc(x.url)+'" data-lb data-cap="'+esc(x.caption||x.name)+'">'+HC.img(x.url,600,x.caption||x.name)+'</a><div class="pb">'+
-      '<div class="row" style="justify-content:space-between">'+(x.kind==='markup'?'<span class="pill markup">Mark-up'+(parent?' of '+esc(parent.name.slice(0,18)):'')+'</span>':'<span class="idea-meta"><b>'+esc(x.author||'')+'</b> '+esc(HC.when(x.created))+'</span>')+(isCover?'<span class="cover-tag">cover</span>':'')+'</div>'+
+    const child=x.kind==='markup'||x.kind==='render';
+    return '<div class="ph '+(child?'markup':'')+'" data-id="'+esc(x.id)+'"><a class="img" href="'+esc(x.url)+'" data-lb data-cap="'+esc(x.caption||x.name)+'">'+HC.img(x.url,600,x.caption||x.name)+'</a><div class="pb">'+
+      '<div class="row" style="justify-content:space-between">'+(child?'<span class="pill markup">'+(x.kind==='render'?'Rendering':'Mark-up')+(parent?' of '+esc(parent.name.slice(0,18)):'')+'</span>':'<span class="idea-meta"><b>'+esc(x.author||'')+'</b> '+esc(HC.when(x.created))+'</span>')+(isCover?'<span class="cover-tag">cover</span>':'')+'</div>'+
       '<div class="cap '+(x.caption?'':'none')+'" data-cap title="Click to edit the caption">'+esc(x.caption||'Add a caption')+'</div>'+
-      '<div class="ops"><button type="button" class="lnk" data-mark>Mark up</button>'+(x.kind!=='markup'&&!isCover?'<button type="button" class="lnk" data-cover>Set as cover</button>':'')+'<button type="button" class="lnk bad" data-del>Delete</button></div></div></div>';
+      '<div class="ops"><button type="button" class="lnk" data-mark>Mark up</button>'+(!child&&!isCover?'<button type="button" class="lnk" data-cover>Set as cover</button>':'')+'<button type="button" class="lnk bad" data-del>Delete</button></div></div></div>';
   }
   function renderPhotos(){
     const list=photos.slice().sort(byDate);
     // keep each mark-up right after the photo it was drawn on
     const ordered=[]; list.filter(x=>!x.parent||!list.some(y=>y.id===x.parent)).forEach(x=>{ordered.push(x); list.filter(y=>y.parent===x.id).forEach(y=>ordered.push(y));});
-    $('#photo-cnt').textContent=photos.length?photos.length+(photos.length===1?' photo':' photos'):'';
+    const n=photos.filter(x=>x.kind==='photo').length; $('#photo-cnt').textContent=n?n+(n===1?' photo':' photos'):'';
     $('#photo-grid').innerHTML=ordered.length?ordered.map(photoTile).join(''):'<div class="empty">No photos yet. Add the first one above.</div>';
   }
   async function addPhotos(fileList){
@@ -216,7 +217,7 @@
     const tile=e.target.closest('.ph'); if(!tile)return;
     const x=photos.find(p=>p.id===tile.dataset.id); if(!x)return;
     if(e.target.closest('[data-del]')){
-      if(!HC.confirmDel('Delete this '+(x.kind==='markup'?'mark-up':'photo and its mark-ups')+'? The file goes to the Drive trash.'))return;
+      if(!HC.confirmDel('Delete this '+(x.kind==='markup'?'mark-up':x.kind==='render'?'rendering':'photo, its rendering and its mark-ups')+'? The file goes to the Drive trash.'))return;
       try{const d=await HC.api.post({action:'photo.delete',id:x.id}); photos=photos.filter(p=>p.id!==x.id&&p.parent!==x.id); P.cover=d.cover||''; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}
     }else if(e.target.closest('[data-cover]')){
       try{const d=await HC.api.post({action:'photo.cover',id:x.id}); P.cover=d.cover; renderPhotos();}catch(err){HC.flash(pst,err.message,true);}

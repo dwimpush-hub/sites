@@ -56,7 +56,7 @@
       '<div class="body"><div class="row" style="justify-content:space-between">'+HC.pill(p.status)+(dates?'<span class="when">'+HC.esc(dates)+'</span>':'')+'</div>'+
       '<h3>'+HC.esc(p.name)+'</h3>'+(p.summary?'<p class="sum">'+HC.esc(p.summary)+'</p>':'')+
       (c.tasks?'<div class="prog" title="'+c.tasksDone+' of '+c.tasks+' tasks done"><i style="width:'+HC.progress(c)+'%"></i></div>':'')+
-      '<div class="counts">'+(c.tasks?'<span>'+c.tasksDone+'/'+c.tasks+' tasks</span>':'')+(c.photos?'<span>'+c.photos+' photos</span>':'')+(c.ideas?'<span>'+c.ideas+' ideas</span>':'')+(c.files?'<span>'+c.files+' files</span>':'')+(p.budget!==''&&p.budget!=null?'<span>'+HC.esc(HC.money(p.budget))+'</span>':'')+(p.page?'<span>concept page</span>':'')+'</div>'+
+      '<div class="counts">'+(c.tasks?'<span>'+c.tasksDone+'/'+c.tasks+' tasks</span>':'')+(c.photos?'<span>'+c.photos+' photos</span>':'')+(c.ideas?'<span>'+c.ideas+' ideas</span>':'')+(c.files?'<span>'+c.files+' files</span>':'')+(p.budget!==''&&p.budget!=null?'<span>'+HC.esc(HC.money(p.budget))+'</span>':'')+(c.photos?'<span>concept sheet</span>':'')+(p.page?'<span>concept page</span>':'')+'</div>'+
       (c.nextDue&&p.status!=='done'&&p.status!=='nixed'?'<div class="when'+(over?' over':'')+'">'+(over?'Overdue: ':'Next: ')+HC.esc(HC.day(c.nextDue))+'</div>':'')+
       '</div></a>';
   }
