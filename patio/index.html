@@ -131,6 +131,37 @@ section:first-of-type{border-top:0}
 #lightbox img{max-width:min(96vw,1600px);max-height:84vh;object-fit:contain;background:#000;box-shadow:0 10px 40px rgba(0,0,0,.6)}
 #lightbox .lb-bar{display:flex;gap:18px;align-items:center;color:#fff;font-size:14px}
 #lightbox .lb-bar a{color:#fff}
+/* mark-up tool */
+#markup{position:fixed;inset:0;z-index:60;background:rgba(10,8,6,.92);display:none;overflow:auto;padding:14px}
+#markup.on{display:block}
+.mk-box{max-width:1040px;margin:0 auto;background:var(--card);color:var(--ink);border:1px solid var(--line);padding:12px 14px 16px;display:grid;gap:10px}
+.mk-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.mk-head h4{margin:0;font-family:var(--display);font-size:20px;line-height:1.2}
+.mk-guide{font-size:13px;color:var(--ink-2);margin:0}
+.mk-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.mk-pal{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mk-sw{width:34px;height:34px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;position:relative}
+.mk-sw.on{box-shadow:0 0 0 2px var(--ink)}
+.mk-sw.used::after{content:"";position:absolute;inset:9px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.mk-sw.on.used::after{background:var(--ink)}
+.mk-sizes{display:flex;gap:4px;align-items:center}
+.mk-sizes button{width:34px;height:34px;border:1px solid var(--line);background:var(--paper);border-radius:3px;cursor:pointer;display:grid;place-items:center;padding:0}
+.mk-sizes button i{display:block;border-radius:50%;background:var(--ink)}
+.mk-sizes button.on{outline:2px solid var(--rust);outline-offset:1px}
+.mk-tools .sp{flex:1}
+.mk-base{display:flex;gap:4px;font-size:13px}
+.mk-base button{font:inherit;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 10px;cursor:pointer;border-radius:3px}
+.mk-base button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.mk-stage{position:relative;width:100%;background:#000;line-height:0;border:1px solid var(--line)}
+.mk-stage canvas{width:100%;height:auto;display:block;touch-action:none;cursor:crosshair}
+.mk-notes{display:grid;gap:8px}
+.mk-notes .eyebrow{font-size:12px}
+.mk-note{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center}
+.mk-note input{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:8px 10px;border-radius:3px;min-height:40px}
+.mk-note input:focus,.mk-box textarea:focus,.mk-box input:focus{outline:2px solid var(--rust);outline-offset:1px}
+.mk-empty{font-size:14px;color:var(--ink-2)}
+.mk-box textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:9px 11px;border-radius:3px;resize:vertical;min-height:44px}
+@media (max-width:640px){#markup{padding:6px}.mk-box{padding:10px 10px 14px}.mk-sw{width:38px;height:38px}}
 #lightbox .lb-close{position:absolute;top:10px;right:14px;background:none;border:0;color:#fff;font-size:34px;line-height:1;cursor:pointer;padding:6px 10px}
 @media (max-width:640px){.ideas{padding:12px 12px 14px}.station{padding-block:22px}.cmp-bar{font-size:15px}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
@@ -168,7 +199,7 @@ section:first-of-type{border-top:0}
 <section id="walk">
   <div class="eyebrow">The walk</div>
   <h2>Nine stations, house to gate</h2>
-  <p>Drag the handle to compare. Tick &ldquo;my markup&rdquo; to see your scribble in the left half instead of the original photo. Things sitting on a zone in the photo (the hose reel, hoses, pots) are painted over by the new surface; everything else is untouched. Each station has an ideas box underneath it: what you post lands in the shared sheet, and anyone with the link can read and edit the ideas. Attach a photo (a marked-up screenshot works well) and it is kept in Drive with a link in the sheet; tap a thumbnail to see it full size.</p>
+  <p>Drag the handle to compare. Tick &ldquo;my markup&rdquo; to see your scribble in the left half instead of the original photo. Things sitting on a zone in the photo (the hose reel, hoses, pots) are painted over by the new surface; everything else is untouched. Each station has an ideas box underneath it: what you post lands in the shared sheet, and anyone with the link can read and edit the ideas. Hit Mark up this view to draw on the concept, one colour per zone, and say what each colour means; the drawing posts as an idea. You can also attach a photo you marked up yourself. Photos are kept in Drive with a link in the sheet; tap a thumbnail to see it full size.</p>
   <div id="stations"></div>
 </section>
 
@@ -297,9 +328,10 @@ const STATIONS = [
         <form class="ideas-form" id="form-${s.key}" autocomplete="off">
           <textarea rows="2" placeholder="Add an idea for this spot. Enter posts it, Shift+Enter makes a new line." aria-label="Your idea for ${s.title}"></textarea>
           <div class="photo-pick">
+            <button type="button" class="btn ghost" data-markup>Mark up this view</button>
             <label class="btn ghost" tabindex="0">Add a photo<input type="file" accept="image/*" aria-label="Attach a photo, for example a marked-up screenshot"></label>
             <span class="pv"><img alt=""><span class="pv-name"></span><button type="button" class="lnk" data-clear>remove</button></span>
-            <span class="pv-hint">Mark up a photo on your phone first, then attach it here.</span>
+            <span class="pv-hint">Draw on the concept, or attach a photo you marked up on your phone.</span>
           </div>
           <div class="ideas-row">
             <input class="who" type="text" placeholder="Your name (optional)" maxlength="80" aria-label="Your name">
@@ -445,8 +477,99 @@ const IDEAS_SHEET = 'https://docs.google.com/spreadsheets/d/13W_AXk0vm_Z_QYbDb5g
     catch(e){STATUS_ALL('Could not load ideas: '+e.message,true);}
   }
   function STATUS_ALL(msg,err){STATIONS.forEach(s=>status(s.key,msg,err));}
+
+  // ---- mark-up tool: draw on the concept (or today) image, one colour per zone, say what each colour means, post it as an idea
+  const PAL=[{c:'#E53935',n:'Red'},{c:'#FB8C00',n:'Orange'},{c:'#FDD835',n:'Yellow'},{c:'#43A047',n:'Green'},{c:'#1E88E5',n:'Blue'},{c:'#8E24AA',n:'Purple'},{c:'#F06292',n:'Pink'},{c:'#FFFFFF',n:'White'},{c:'#111111',n:'Black'}];
+  const SIZES=[{k:'thin',px:4,dot:6},{k:'medium',px:9,dot:11},{k:'thick',px:18,dot:18}];
+  const mkState={}; // per station: strokes, notes, base, colour, size
+  const mk=document.createElement('div'); mk.id='markup'; mk.setAttribute('role','dialog'); mk.setAttribute('aria-label','Mark up this view');
+  mk.innerHTML=`<div class="mk-box">
+    <div class="mk-head"><h4 id="mk-title"></h4><button type="button" class="lnk" data-close>Close</button></div>
+    <p class="mk-guide">Pick a colour and draw round one zone or idea. Pick a new colour for the next one, then say what each colour means below. Tap a colour in the list to draw with it again.</p>
+    <div class="mk-tools">
+      <div class="mk-pal" role="radiogroup" aria-label="Colour">${PAL.map(p=>`<button type="button" class="mk-sw" data-c="${p.c}" style="background:${p.c}" title="${p.n}" aria-label="${p.n}"></button>`).join('')}</div>
+      <div class="mk-sizes" aria-label="Brush size">${SIZES.map(z=>`<button type="button" data-size="${z.k}" title="${z.k}" aria-label="${z.k} brush"><i style="width:${z.dot}px;height:${z.dot}px"></i></button>`).join('')}</div>
+      <span class="sp"></span>
+      <div class="mk-base"><button type="button" data-base="after" class="on">Concept</button><button type="button" data-base="before">Today</button></div>
+      <button type="button" class="lnk" data-undo>Undo</button><button type="button" class="lnk" data-clear>Clear</button>
+    </div>
+    <div class="mk-stage"><canvas aria-label="Drawing surface"></canvas></div>
+    <div class="mk-notes"><span class="eyebrow">What each colour calls out</span><div class="mk-rows"><div class="mk-empty">Nothing drawn yet.</div></div></div>
+    <textarea rows="2" placeholder="Anything else about this view? (optional)" aria-label="General note"></textarea>
+    <div class="ideas-row"><input class="who" type="text" placeholder="Your name (optional)" maxlength="80" aria-label="Your name"><button type="button" class="btn" data-post>Post markup</button><span class="ideas-status muted" aria-live="polite"></span></div>
+  </div>`;
+  document.body.appendChild(mk);
+  const cv=mk.querySelector('canvas'), cx=cv.getContext('2d'), rows=mk.querySelector('.mk-rows'), mkSt=mk.querySelector('.ideas-status');
+  const imgCache={};
+  const loadImg=src=>imgCache[src]||(imgCache[src]=new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('image did not load'));im.src=src;}));
+  let cur=null, drawing=null, base={after:null,before:null};
+  const colName=c=>(PAL.find(p=>p.c===c)||{n:c}).n;
+  function paintStroke(ctx,st,k){ctx.strokeStyle=st.c;ctx.lineWidth=st.w*k;ctx.lineCap='round';ctx.lineJoin='round';ctx.globalAlpha=0.9;ctx.beginPath();st.p.forEach((pt,i)=>i?ctx.lineTo(pt[0]*k,pt[1]*k):ctx.moveTo(pt[0]*k,pt[1]*k));if(st.p.length===1)ctx.lineTo(st.p[0][0]*k+0.1,st.p[0][1]*k);ctx.stroke();ctx.globalAlpha=1;}
+  function paintAll(ctx,W,H,k){const im=base[cur.base]||base.after;ctx.clearRect(0,0,W,H);if(im)ctx.drawImage(im,0,0,W,H);cur.strokes.forEach(st=>paintStroke(ctx,st,k));}
+  function redraw(){paintAll(cx,cv.width,cv.height,1);}
+  function usedColours(){const seen=[];cur.strokes.forEach(st=>{if(!seen.includes(st.c))seen.push(st.c);});return seen;}
+  function syncTools(){
+    mk.querySelectorAll('.mk-sw').forEach(b=>{b.classList.toggle('on',b.dataset.c===cur.c);b.classList.toggle('used',usedColours().includes(b.dataset.c));b.setAttribute('aria-checked',b.dataset.c===cur.c);});
+    mk.querySelectorAll('[data-size]').forEach(b=>b.classList.toggle('on',b.dataset.size===cur.size));
+    mk.querySelectorAll('[data-base]').forEach(b=>b.classList.toggle('on',b.dataset.base===cur.base));
+    const used=usedColours(), key=used.join(',');
+    if(rows.dataset.key!==key){
+      rows.dataset.key=key;
+      rows.innerHTML=used.length?used.map(c=>`<div class="mk-note"><button type="button" class="mk-sw" data-c="${c}" style="background:${c}" title="Draw with ${colName(c)} again" aria-label="Draw with ${colName(c)} again"></button><input type="text" data-note="${c}" placeholder="${colName(c)}: what does this mark out?" value="${esc(cur.notes[c]||'')}" maxlength="300"></div>`).join(''):'<div class="mk-empty">Nothing drawn yet.</div>';
+      rows.querySelectorAll('[data-note]').forEach(i=>i.addEventListener('input',()=>{cur.notes[i.dataset.note]=i.value;}));
+      rows.querySelectorAll('.mk-sw').forEach(b=>b.addEventListener('click',()=>{cur.c=b.dataset.c;syncTools();}));
+    }
+    rows.querySelectorAll('.mk-note .mk-sw').forEach(b=>b.classList.toggle('on',b.dataset.c===cur.c));
+  }
+  async function openMarkup(s){
+    cur=mkState[s.key]||(mkState[s.key]={key:s.key,title:s.title,strokes:[],notes:{},base:'after',c:PAL[0].c,size:'medium'});
+    mk.querySelector('#mk-title').textContent='Mark up: '+s.title; mk.querySelector('.who').value=myName(); mkSt.textContent='Loading image...'; mkSt.classList.remove('err');
+    mk.classList.add('on'); document.body.style.overflow='hidden';
+    try{
+      base.after=await loadImg('Renders/'+s.key+'_after.jpg');
+      const k=Math.min(1,1600/Math.max(base.after.naturalWidth,base.after.naturalHeight));
+      cv.width=Math.round(base.after.naturalWidth*k); cv.height=Math.round(base.after.naturalHeight*k);
+      base.before=null; loadImg('Renders/'+s.key+'_before.jpg').then(im=>{base.before=im;if(cur&&cur.base==='before')redraw();}).catch(()=>{});
+      mkSt.textContent='';
+    }catch(e){mkSt.textContent='Could not load the image: '+e.message; mkSt.classList.add('err');}
+    redraw(); syncTools();
+  }
+  function closeMarkup(){mk.classList.remove('on'); document.body.style.overflow=''; drawing=null;}
+  mk.querySelector('[data-close]').addEventListener('click',closeMarkup);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mk.classList.contains('on'))closeMarkup();});
+  mk.querySelector('.mk-pal').addEventListener('click',e=>{const b=e.target.closest('.mk-sw');if(!b)return;cur.c=b.dataset.c;syncTools();});
+  mk.querySelector('.mk-sizes').addEventListener('click',e=>{const b=e.target.closest('[data-size]');if(!b)return;cur.size=b.dataset.size;syncTools();});
+  mk.querySelector('.mk-base').addEventListener('click',e=>{const b=e.target.closest('[data-base]');if(!b)return;cur.base=b.dataset.base;redraw();syncTools();});
+  mk.querySelector('[data-undo]').addEventListener('click',()=>{cur.strokes.pop();redraw();syncTools();});
+  mk.querySelector('[data-clear]').addEventListener('click',()=>{if(cur.strokes.length&&!confirm('Clear the whole drawing?'))return;cur.strokes=[];redraw();syncTools();});
+  const pos=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height];};
+  cv.addEventListener('pointerdown',e=>{if(!cur||!base.after)return;e.preventDefault();cv.setPointerCapture(e.pointerId);const z=SIZES.find(z=>z.k===cur.size)||SIZES[1];drawing={c:cur.c,w:z.px*cv.width/1200,p:[pos(e)]};cur.strokes.push(drawing);paintStroke(cx,drawing,1);});
+  cv.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();const pt=pos(e),last=drawing.p[drawing.p.length-1];if(Math.hypot(pt[0]-last[0],pt[1]-last[1])<1.5)return;drawing.p.push(pt);cx.strokeStyle=drawing.c;cx.lineWidth=drawing.w;cx.lineCap='round';cx.lineJoin='round';cx.globalAlpha=0.9;cx.beginPath();cx.moveTo(last[0],last[1]);cx.lineTo(pt[0],pt[1]);cx.stroke();cx.globalAlpha=1;});
+  const endStroke=()=>{if(!drawing)return;drawing=null;redraw();syncTools();};
+  cv.addEventListener('pointerup',endStroke); cv.addEventListener('pointercancel',endStroke);
+  mk.querySelector('[data-post]').addEventListener('click',async()=>{
+    if(!cur||!cur.strokes.length){mkSt.textContent='Draw something first.';return;}
+    const used=usedColours(), missing=used.filter(c=>!(cur.notes[c]||'').trim());
+    if(missing.length){mkSt.textContent='Say what '+missing.map(colName).join(', ')+(missing.length>1?' mean':' means')+' in the list below.';mkSt.classList.add('err');rows.querySelector('[data-note="'+missing[0]+'"]').focus();return;}
+    const author=mk.querySelector('.who').value.trim(); saveName(author);
+    const extra=mk.querySelector('textarea').value.trim();
+    const text=used.map(c=>colName(c)+': '+cur.notes[c].trim()).join('\n')+(extra?'\n\n'+extra:'');
+    const off=document.createElement('canvas'); off.width=cv.width; off.height=cv.height; paintAll(off.getContext('2d'),off.width,off.height,1);
+    const d=off.toDataURL('image/jpeg',0.86);
+    const photo={name:'markup-'+cur.key+'.jpg',type:'image/jpeg',data:d.slice(d.indexOf(',')+1)};
+    mk.querySelectorAll('button').forEach(b=>b.disabled=true); mkSt.classList.remove('err'); mkSt.textContent='Posting markup...';
+    try{
+      const r=await api({action:'add',station:cur.key,title:cur.title,author,text,photo});
+      ideas.push(r.idea); render(cur.key,true); status(cur.key,'Markup posted.'); setTimeout(()=>status(cur.key,''),3000);
+      delete mkState[cur.key]; mk.querySelector('textarea').value=''; mkSt.textContent=''; closeMarkup();
+      const el=document.getElementById('ideas-'+cur.key); if(el)el.scrollIntoView({block:'nearest'});
+    }catch(e){mkSt.textContent='Could not post: '+e.message; mkSt.classList.add('err');}
+    mk.querySelectorAll('button').forEach(b=>b.disabled=false);
+  });
+
   STATIONS.forEach(s=>{
     const form=document.getElementById('form-'+s.key); if(!form)return;
+    form.querySelector('[data-markup]').addEventListener('click',()=>openMarkup(s));
     const ta=form.querySelector('textarea'), who=form.querySelector('.who'), btn=form.querySelector('button[type=submit]');
     who.value=myName();
     const picker=wirePicker(form.querySelector('.photo-pick'),m=>status(s.key,m,true));
